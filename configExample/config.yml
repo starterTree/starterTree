@@ -1,0 +1,16 @@
+terms:
+  wezterm:
+    cmd: "exec wezterm &"
+  cool-retro-term:
+    cmd: "exec cool-retro-term &"
+links:
+  google:
+    cmd: "xdg-open https://google.com"
+shut:
+  lock:
+    cmd: "lock.sh"
+  shutdown:
+    cmdP: "poweroff"
+  #anotherSection: 
+    #file_content_relative: subDir/anotherConf.yml
+ 
