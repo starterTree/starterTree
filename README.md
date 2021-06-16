@@ -116,17 +116,17 @@ Here's a blank template to get started:
 
 ### Installation
 
-1. Download the release
-   ```  
-   cd ~/.local/package 
-   curl -L ’remote_tar_file' | tar -xz - -C az --strip-components=1 
-   ln -s ~/.local/package
-   ```
-2. Install NPM packages
-   ```sh
-   npm install
+1. Download the release and create symlink
+   ```bash  
+   cd /opt 
+   sudo curl -L ’https://github.com/thomas10-10/az/releases/download/v0.1/az.tar.gz' | sudo tar -xz   
    ```
 
+2. Create symlink
+   ```bash
+   sudo ln -s /opt/az/az /usr/local/bin/az
+   ```
+   <!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.1/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
 
 
 <!-- USAGE EXAMPLES -->
@@ -214,6 +214,5 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [license-url]: https://github.com/github_username/repo/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/github_username
-
 
 
