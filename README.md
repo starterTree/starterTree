@@ -111,7 +111,7 @@ Here's a blank template to get started:
 
 
 * Linux system (not yet tested on windows)
-* Python3  (only if you do not use the binarie in release section)
+* Python3  (only if you do not use the binary in release section)
 
 
 ### Installation
