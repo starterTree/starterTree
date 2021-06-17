@@ -37,11 +37,11 @@
     <img src="https://i.imgur.com/DDlMrtA.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">AZ</h3>
+  <h3 align="center">StarterTree</h3>
 
   <p align="center">
     command launcher organised in a tree structure with autocompletion <br>
-    <img src="https://i.imgur.com/yct5sjZ.gif" alt="Logo" width="600" height="80">
+    
     <br /><!--
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
     <br />
@@ -124,21 +124,21 @@ Here's a blank template to get started:
 
 2. Create symlink
    ```bash
-   sudo ln -s /opt/az/az /usr/local/bin/az
+   sudo ln -s /opt/starterTree/starterTree /usr/local/bin/t
    ```
    <!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.1/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-A configuration must be in ~/.config/az/config.yml .
+A configuration must be in ~/.config/starterTree/config.yml .
 Otherwise you can specify the path of the config file as an argument:
-` az /tmp/myconfig.yml`
+` t /tmp/myconfig.yml`
 >and you can use the alias command to encapsulate the config file:
-` alias az="az /tmp/myconfig.yml"`
+` alias t="t /tmp/myconfig.yml"`
 or to manage several different configurations:
-` alias toto1="az /other/myconfig.yml"`
-` alias toto2="az /other/anOtherconfig.yml"`
+` alias toto1="t /other/myconfig.yml"`
+` alias toto2="t /other/anOtherconfig.yml"`
  
 there is a sample configuration file in git depot `exampleConfig/config.yml`
   
