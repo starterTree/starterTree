@@ -130,9 +130,15 @@ Here's a blank template to get started:
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+to run:
+```
+$ t
+```
 A configuration must be in ~/.config/starterTree/config.yml .
 Otherwise you can specify the path of the config file as an argument:
-` t /tmp/myconfig.yml`
+```
+ t /tmp/myconfig.yml
+```
 >and you can use the alias command to encapsulate the config file:
 ` alias t="t /tmp/myconfig.yml"`
 or to manage several different configurations:
