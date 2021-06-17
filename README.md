@@ -134,7 +134,10 @@ to run:
 ```
 $ t
 ```
-A configuration must be in ~/.config/starterTree/config.yml .
+A configuration must be in ~/.config/starterTree/config.yml.
+
+There is a sample configuration file in git depot `exampleConfig/config.yml`
+    
 Otherwise you can specify the path of the config file as an argument:
 ```
  t /tmp/myconfig.yml
@@ -145,7 +148,7 @@ or to manage several different configurations:
 ` alias toto1="t /other/myconfig.yml"`
 ` alias toto2="t /other/anOtherconfig.yml"`
  
-there is a sample configuration file in git depot `exampleConfig/config.yml`
+config file example:
   
 ```yaml
 main: #create menu main
