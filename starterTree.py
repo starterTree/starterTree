@@ -15,7 +15,7 @@ from prompt_toolkit import PromptSession
 try:
 	file_main=str(sys.argv[1])
 except IndexError:
-	file_main=os.environ['HOME']+'/.config/az/config.yml'
+	file_main=os.environ['HOME']+'/.config/starterTree/config.yml'
 
 _dest={}
 _type={}
