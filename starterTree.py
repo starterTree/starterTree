@@ -11,6 +11,9 @@ from prompt_toolkit.shortcuts import CompleteStyle,prompt
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.completion import FuzzyWordCompleter,FuzzyCompleter,WordCompleter
 from prompt_toolkit import PromptSession
+from prompt_toolkit.application import run_in_terminal
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.formatted_text import HTML
 
 try:
 	file_main=str(sys.argv[1])
@@ -62,9 +65,6 @@ my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),_dest,"","")
 
 completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(_dest))
 
-from prompt_toolkit.application import run_in_terminal
-from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.formatted_text import HTML
 bindings = KeyBindings()
 
 
@@ -74,7 +74,7 @@ def _(event):
 	event.app.exit()
 
 def main():
-	session = PromptSession(os.path.basename(__file__)+u" > ", completer=completer, mouse_support=True, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
+	session = PromptSession(os.path.basename(sys.argv[0])+u" > ", completer=completer, mouse_support=True, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
 	try:
 		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,).replace(" ","")
 	except:
