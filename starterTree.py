@@ -27,28 +27,31 @@ keyword_file_content_relative="file_content_relative"
 keyword_module_cmd="cmd"
 keyword_module_cmd_c="cmdP"
 keyword_module_opn="opn"
+keyword_module_ssh="ssh"
 modules=""
 absolute_path_main_config_file=os.path.dirname(file_main)+"/"
 def my_fun(source_dict,menu_completion,path_entry_name):
 	for key in source_dict:
-		menu_completion[key]=None
 		path_entry_name_content["path_"+path_entry_name+key]={}
 		if keyword_file_content_relative in source_dict[key]:
 			menu_completion[key]={}
 			my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][keyword_file_content_relative], 'r'),Loader=yaml.SafeLoader),menu_completion[key],path_entry_name+key)
-	
 
-		test={}
-		test[key]={}
 		for subKey in source_dict[key]:
+			print(subKey)
 			if not isinstance(source_dict[key][subKey],dict):
+				icon=""
+				if subKey == keyword_module_opn:
+					icon=""
+				if subKey == keyword_module_ssh:
+					icon=""
 				path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+				print(subKey)
+				menu_completion[key+icon]=None
 			
 			if isinstance(source_dict[key][subKey], dict):
-				test[key][subKey]={}
-				test[key][subKey]=source_dict[key][subKey]	
 				menu_completion[key]={}
-				my_fun(test[key], menu_completion[key] ,path_entry_name+key)
+				my_fun(source_dict[key], menu_completion[key] ,path_entry_name+key)
 				
 menu_completion={}
 my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"")
@@ -70,6 +73,7 @@ def main():
 		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,).replace(" ","")
 	except:
 		exit()
+	prompt_id="path_"+prompt_id 
 	if  prompt_id in path_entry_name_content:  
 		if keyword_module_opn in path_entry_name_content[prompt_id]:
 			text = "xdg-open "+path_entry_name_content[prompt_id][keyword_module_opn]
