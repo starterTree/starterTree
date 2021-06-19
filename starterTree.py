@@ -7,6 +7,8 @@ import os
 import sys
 
 import yaml
+import pprint
+import json
 from prompt_toolkit.shortcuts import CompleteStyle,prompt
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.completion import FuzzyWordCompleter,FuzzyCompleter,WordCompleter
@@ -20,53 +22,42 @@ try:
 except IndexError:
 	file_main=os.environ['HOME']+'/.config/starterTree/config.yml'
 
-_dest={}
-_type={}
-DEBUG=[]
-sign=("")
-keyword_file_content_relative=sign+"file_content_relative"
-keyword_content=sign+"content"
+path_entry_name_content={}
+keyword_file_content_relative="file_content_relative"
 keyword_module_cmd="cmd"
 keyword_module_cmd_c="cmdP"
+keyword_module_opn="opn"
 modules=""
-absolute_source=os.path.dirname(file_main)+"/"
-keywords=(keyword_module_cmd,keyword_file_content_relative,keyword_content)
-
-def my_fun(source,dest,path_object,tab):
-	path_object=path_object+" "
-	esp=tab+"   "
-	_type[path_object]={}
-	for i in source:
-		id=path_object.replace(" ", "")+i
-		dest[i]=None
-		DEBUG.append(esp+"⊛"+i+"  "+"id: "+id)
-		_type[id]={}
-		for a in source[i]:
-			if a != keyword_content:
-				DEBUG.append(id+" "+a)
-				_type[id][a]=source[i][a]
-			else:
-				DEBUG.append(esp+" "+a+":")
-			
-		if keyword_file_content_relative in source[i]:
-			dest[i]={}
-			my_fun(yaml.load(open(absolute_source+source[i][keyword_file_content_relative], 'r'),Loader=yaml.SafeLoader),dest[i],path_object+i,esp)
+absolute_path_main_config_file=os.path.dirname(file_main)+"/"
+def my_fun(source_dict,menu_completion,path_entry_name):
+	for key in source_dict:
+		menu_completion[key]=None
+		path_entry_name_content["path_"+path_entry_name+key]={}
+		if keyword_file_content_relative in source_dict[key]:
+			menu_completion[key]={}
+			my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][keyword_file_content_relative], 'r'),Loader=yaml.SafeLoader),menu_completion[key],path_entry_name+key)
+	
 
 		test={}
-		test[i]={}
-		for a in source[i]:
-			if isinstance(source[i][a], dict):
-				test[i][a]={}
-				test[i][a]=source[i][a]	
-				dest[i]={}
-				my_fun(test[i], dest[i] ,path_object+i,esp)
+		test[key]={}
+		for subKey in source_dict[key]:
+			if not isinstance(source_dict[key][subKey],dict):
+				path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+			
+			if isinstance(source_dict[key][subKey], dict):
+				test[key][subKey]={}
+				test[key][subKey]=source_dict[key][subKey]	
+				menu_completion[key]={}
+				my_fun(test[key], menu_completion[key] ,path_entry_name+key)
 				
-my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),_dest,"","")
+menu_completion={}
+my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"")
 
-completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(_dest))
+completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
 
 bindings = KeyBindings()
 
+print(json.dumps(path_entry_name_content, sort_keys=False, indent=4))
 
 @bindings.add('c-c')
 def _(event):
@@ -79,20 +70,27 @@ def main():
 		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,).replace(" ","")
 	except:
 		exit()
-	if  prompt_id in _type:  
-		if keyword_module_cmd in _type[prompt_id] or keyword_module_cmd_c in _type[prompt_id]:
-			if  keyword_module_cmd_c in _type[prompt_id]:
-				text = _type[prompt_id][keyword_module_cmd_c]
+	if  prompt_id in path_entry_name_content:  
+		if keyword_module_opn in path_entry_name_content[prompt_id]:
+			text = "xdg-open "+path_entry_name_content[prompt_id][keyword_module_opn]
+			os.system(text)   
+			with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
+				myfile.write(text+' # '+prompt_id+'\n')
+		if keyword_module_cmd in path_entry_name_content[prompt_id] or keyword_module_cmd_c in path_entry_name_content[prompt_id]:
+			if  keyword_module_cmd_c in path_entry_name_content[prompt_id]:
+				text = path_entry_name_content[prompt_id][keyword_module_cmd_c]
 				text = prompt(">", default='%s' % text,key_bindings=bindings,)
 			else:
-				text = _type[prompt_id][keyword_module_cmd]
+				text = path_entry_name_content[prompt_id][keyword_module_cmd]
 			if text is None:
 				exit()
 			os.system(text)
 			with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
 				myfile.write(text+' # '+prompt_id+'\n')
+
+
 	else:
-		print("AZ: entry not found")
+            print("ERR: entry not found")
 
 if __name__ == "__main__":
     main()
