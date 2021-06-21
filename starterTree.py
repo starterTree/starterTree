@@ -17,6 +17,12 @@ from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.formatted_text import HTML
 
+
+tmpDir=os.environ['HOME']+'/.starterTree/'
+if not os.path.exists(tmpDir):
+    os.mkdir(tmpDir)
+
+configDir=os.environ['HOME']+'/.config'
 try:
 	file_main=str(sys.argv[1])
 except IndexError:
@@ -24,38 +30,68 @@ except IndexError:
 
 path_entry_name_content={}
 keyword_file_content_relative="file_content_relative"
+keyword_web_content="web_content"
+keyword_private_web="private_web_content"
 keyword_module_cmd="cmd"
 keyword_module_cmd_c="cmdP"
 keyword_module_opn="opn"
 keyword_module_ssh="ssh"
 modules=""
 absolute_path_main_config_file=os.path.dirname(file_main)+"/"
-listIcon=['','','','','']
+listIcon=['','','','','','','']
 def my_fun(source_dict,menu_completion,path_entry_name):
 	for key in source_dict:
 		path_entry_name_content["path_"+path_entry_name+key]={}
 		if keyword_file_content_relative in source_dict[key]:
 			menu_completion[key]={}
 			my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][keyword_file_content_relative], 'r'),Loader=yaml.SafeLoader),menu_completion[key],path_entry_name+key)
+		if keyword_web_content in source_dict[key]:
+			if not os.path.exists(tmpDir+os.path.basename(source_dict[key][keyword_web_content])):
+				os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][keyword_web_content])+" "+source_dict[key][keyword_web_content])
+			menu_completion[key]={}
+			my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][keyword_web_content]), 'r'),Loader=yaml.SafeLoader),menu_completion[key],path_entry_name+key)
 
-		for subKey in source_dict[key]:
-			print(subKey)
-			if not isinstance(source_dict[key][subKey],dict):
-				icon=""
-				if subKey == keyword_module_opn:
-					icon=""
-				if subKey == keyword_module_ssh:
-					icon=""
-				if subKey == keyword_module_cmd:
-					icon=""
-				path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
-				print(subKey)
-				menu_completion[icon+key]=None
-			
-			if isinstance(source_dict[key][subKey], dict):
-				icon=""
-				menu_completion[icon+key]={}
-				my_fun(source_dict[key], menu_completion[icon+key] ,path_entry_name+key)
+		if  1==1:
+			for subKey in source_dict[key]:
+				if not isinstance(source_dict[key][subKey],dict):
+					icon=""
+					if subKey == "file_content_relative_t":
+						icon=""
+						print("fuck")
+						menu_completion[icon+key]={}
+						my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
+					if subKey == "web_content_t":
+						icon=""
+						if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
+							os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][subKey])+" "+source_dict[key][subKey])
+						menu_completion[icon+key]={}
+						my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
+
+					
+					if subKey == keyword_module_opn:
+						icon=""
+						path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+						menu_completion[icon+key]=None
+					if subKey == keyword_module_ssh:
+						icon=""
+						path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+						menu_completion[icon+key]=None
+					if subKey == keyword_module_cmd:
+						icon=""
+						path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+						menu_completion[icon+key]=None
+					if subKey == keyword_module_cmd_c:
+						icon=""
+						path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+						menu_completion[icon+key]=None
+					#if subKey == keyword_file_content_relative:
+						#my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
+						
+				
+				if isinstance(source_dict[key][subKey], dict):
+					icon=""
+					menu_completion[icon+key]={}
+					my_fun(source_dict[key], menu_completion[icon+key] ,path_entry_name+key)
 				
 menu_completion={}
 my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"")
@@ -65,6 +101,7 @@ completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
 bindings = KeyBindings()
 
 print(json.dumps(path_entry_name_content, sort_keys=False, indent=4))
+print(json.dumps(menu_completion, sort_keys=False, indent=4))
 
 @bindings.add('c-c')
 def _(event):
