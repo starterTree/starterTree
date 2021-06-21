@@ -121,6 +121,7 @@ def main():
 	prompt_id="path_"+prompt_id 
 	if  prompt_id in path_entry_name_content:
 		text=prompt_id 
+		print(text,path_entry_name_content[prompt_id]) 
 		if keyword_module_ssh in path_entry_name_content[prompt_id]:
 			text = "ssh "+path_entry_name_content[prompt_id][keyword_module_ssh]
 			os.system(text)   
