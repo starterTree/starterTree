@@ -82,12 +82,14 @@ def main():
 	except:
 		exit()
 	prompt_id="path_"+prompt_id 
-	if  prompt_id in path_entry_name_content:  
+	if  prompt_id in path_entry_name_content:
+		text=prompt_id 
+		if keyword_module_ssh in path_entry_name_content[prompt_id]:
+			text = "ssh "+path_entry_name_content[prompt_id][keyword_module_ssh]
+			os.system(text)   
 		if keyword_module_opn in path_entry_name_content[prompt_id]:
 			text = "xdg-open "+path_entry_name_content[prompt_id][keyword_module_opn]
 			os.system(text)   
-			with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
-				myfile.write(text+' # '+historyName+'\n')
 		if keyword_module_cmd in path_entry_name_content[prompt_id] or keyword_module_cmd_c in path_entry_name_content[prompt_id]:
 			if  keyword_module_cmd_c in path_entry_name_content[prompt_id]:
 				text = path_entry_name_content[prompt_id][keyword_module_cmd_c]
@@ -97,8 +99,9 @@ def main():
 			if text is None:
 				exit()
 			os.system(text)
-			with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
-				myfile.write(text+' # '+historyName+'\n')
+		
+		with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
+			myfile.write(text+' # '+historyName+'\n')
 
 
 	else:
