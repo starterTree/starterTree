@@ -172,9 +172,9 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 <!-- ROADMAP -->
 ## Roadmap
-an improved interface with a space to display the description of an entry is planned
-
-
+* an improved interface with a space to display the description of an entry is planned
+* split code 
+* replace external command like curl
 <!--
 See the [open issues](https://github.com/github_username/repo_name/issues) for a list of proposed features (and known issues).
 

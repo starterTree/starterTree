@@ -42,26 +42,21 @@ listIcon=['','','','','','','']
 def my_fun(source_dict,menu_completion,path_entry_name):
 	for key in source_dict:
 		path_entry_name_content["path_"+path_entry_name+key]={}
-		if keyword_file_content_relative in source_dict[key]:
-			menu_completion[key]={}
-			my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][keyword_file_content_relative], 'r'),Loader=yaml.SafeLoader),menu_completion[key],path_entry_name+key)
-		if keyword_web_content in source_dict[key]:
-			if not os.path.exists(tmpDir+os.path.basename(source_dict[key][keyword_web_content])):
-				os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][keyword_web_content])+" "+source_dict[key][keyword_web_content])
-			menu_completion[key]={}
-			my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][keyword_web_content]), 'r'),Loader=yaml.SafeLoader),menu_completion[key],path_entry_name+key)
 
 		if  1==1:
 			for subKey in source_dict[key]:
 				if not isinstance(source_dict[key][subKey],dict):
 					icon=""
-					if subKey == "file_content_relative_t":
+					if subKey == keyword_file_content_relative:
 						icon=""
+						path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
 						print("fuck")
 						menu_completion[icon+key]={}
 						my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
-					if subKey == "web_content_t":
+					if subKey == keyword_web_content:
 						icon=""
+						path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
+						path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
 						if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
 							os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][subKey])+" "+source_dict[key][subKey])
 						menu_completion[icon+key]={}
@@ -122,6 +117,8 @@ def main():
 	if  prompt_id in path_entry_name_content:
 		text=prompt_id 
 		print(text,path_entry_name_content[prompt_id]) 
+		if keyword_web_content in path_entry_name_content[prompt_id]:
+			os.system("curl -L -o "+tmpDir+os.path.basename(path_entry_name_content[prompt_id][keyword_web_content])+" "+path_entry_name_content[prompt_id][keyword_web_content])
 		if keyword_module_ssh in path_entry_name_content[prompt_id]:
 			text = "ssh "+path_entry_name_content[prompt_id][keyword_module_ssh]
 			os.system(text)   
