@@ -126,7 +126,7 @@ Here's a blank template to get started:
    ```bash
    sudo ln -s /opt/starterTree/starterTree /usr/local/bin/t
    ```
-   <!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.1/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
+   <!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.3/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
 
 
 to enable icons, you must install nerd fonts [nerdFonts](https://www.nerdfonts.com/font-downloads)
