@@ -41,7 +41,7 @@
 
   <p align="center">
     command launcher organised in a tree structure with autocompletion <br>
-    <img src="https://i.imgur.com/vIcfvl4.gif" alt="Logo" width="650" height="150">
+    <img src="https://i.imgur.com/Dl5eqcW.png" alt="Logo" width="950" height="150">
     <br />
   <!--
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
@@ -119,7 +119,7 @@ Here's a blank template to get started:
 1. Download the release and create symlink
    ```bash  
    cd /opt 
-   sudo curl -L 'https://github.com/thomas10-10/az/releases/download/v0.2/starterTree.tar.gz' | sudo tar -xz   
+   sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/v0.3/starterTree.tar.gz' | sudo tar -xz   
    ```
 
 2. Create symlink
