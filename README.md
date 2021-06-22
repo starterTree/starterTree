@@ -111,7 +111,7 @@ Here's a blank template to get started:
 ### Prerequisites
 
 
-* Linux system (not yet tested on windows)
+* Linux system
 
 
 ### Installation
@@ -126,8 +126,10 @@ Here's a blank template to get started:
    ```bash
    sudo ln -s /opt/starterTree/starterTree /usr/local/bin/t
    ```
-   <!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.1/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
+   <!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.3/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
 
+
+to enable icons, you must install nerd fonts [nerdFonts](https://www.nerdfonts.com/font-downloads)
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -165,6 +167,8 @@ main: #create menu main
   
  ```
 
+
+
 <!--
 _For more examples, please refer to the [Documentation](https://example.com)_
 
@@ -172,9 +176,9 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 <!-- ROADMAP -->
 ## Roadmap
-an improved interface with a space to display the description of an entry is planned
-
-
+* an improved interface with a space to display the description of an entry is planned
+* split code in module 
+* replace external bash command like curl, fc-list, grep  by python code
 <!--
 See the [open issues](https://github.com/github_username/repo_name/issues) for a list of proposed features (and known issues).
 
