@@ -19,7 +19,16 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.formatted_text import HTML
 
 
+listIcon=[]
+detectNerdFont= False
+if not os.system("fc-list | grep -i nerd >/dev/null "):
+    detectNerdFont= True
+    listIcon=['','','','','','','']
+
+
 #from module.test import add
+
+
 
 tmpDir=os.environ['HOME']+'/.starterTree/'
 if not os.path.exists(tmpDir):
@@ -41,7 +50,6 @@ keyword_module_opn="opn"
 keyword_module_ssh="ssh"
 modules=""
 absolute_path_main_config_file=os.path.dirname(file_main)+"/"
-listIcon=['','','','','','','']
 def downloadFromGitlabWithPromptToken(url):
 	token=prompt('token like ezzfegzgezcH: ', is_password=True)
 	r = requests.get(url, headers={'PRIVATE-TOKEN':token})
@@ -59,15 +67,15 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 		path_entry_name_content["path_"+path_entry_name+key]={}
 
 		for subKey in source_dict[key]:
+			icon=""
 			if not isinstance(source_dict[key][subKey],dict):
-				icon=""
 				if subKey == keyword_file_content_relative:
-					icon=""
+					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]={}
 					my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 				if subKey == keyword_web_content:
-					icon=""
+					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
 					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
@@ -76,7 +84,7 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 					menu_completion[icon+key]={}
 					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 				if subKey == keyword_gitlab_content_code_prompt_token:	
-					icon=""
+					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
 					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
@@ -85,19 +93,19 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 				
 				if subKey == keyword_module_opn:
-					icon=""
+					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_ssh:
-					icon=""
+					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_cmd:
-					icon=""
+					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_cmd_c:
-					icon=""
+					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				#if subKey == keyword_file_content_relative:
@@ -105,7 +113,7 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 					
 				
 			if isinstance(source_dict[key][subKey], dict):
-				icon=""
+				if detectNerdFont: icon=""
 				menu_completion[icon+key]={}
 				my_fun(source_dict[key], menu_completion[icon+key] ,path_entry_name+key)
 				
