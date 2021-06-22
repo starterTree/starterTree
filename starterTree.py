@@ -9,6 +9,7 @@ import sys
 import yaml
 import pprint
 import json
+import requests
 from prompt_toolkit.shortcuts import CompleteStyle,prompt
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.completion import FuzzyWordCompleter,FuzzyCompleter,WordCompleter
@@ -17,6 +18,8 @@ from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.formatted_text import HTML
 
+
+#from module.test import add
 
 tmpDir=os.environ['HOME']+'/.starterTree/'
 if not os.path.exists(tmpDir):
@@ -31,7 +34,7 @@ except IndexError:
 path_entry_name_content={}
 keyword_file_content_relative="file_content_relative"
 keyword_web_content="web_content"
-keyword_private_web="private_web_content"
+keyword_gitlab_content_code_prompt_token="gitlab_api_content_prompt_token"
 keyword_module_cmd="cmd"
 keyword_module_cmd_c="cmdP"
 keyword_module_opn="opn"
@@ -39,54 +42,72 @@ keyword_module_ssh="ssh"
 modules=""
 absolute_path_main_config_file=os.path.dirname(file_main)+"/"
 listIcon=['','','','','','','']
+def downloadFromGitlabWithPromptToken(url):
+	token=prompt('token like ezzfegzgezcH: ', is_password=True)
+	r = requests.get(url, headers={'PRIVATE-TOKEN':token})
+	rep='\n'.join(r.json()["content"].split('\n')[1:])
+	with open(tmpDir+os.path.basename(url),"w") as f:
+		f.write(rep)
+
+
+def downloadFromUrl(url):
+	r = requests.get(url)
+	with open(tmpDir+os.path.basename(url),"w") as f:
+		f.write(r.text)
 def my_fun(source_dict,menu_completion,path_entry_name):
 	for key in source_dict:
 		path_entry_name_content["path_"+path_entry_name+key]={}
 
-		if  1==1:
-			for subKey in source_dict[key]:
-				if not isinstance(source_dict[key][subKey],dict):
-					icon=""
-					if subKey == keyword_file_content_relative:
-						icon=""
-						path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
-						print("fuck")
-						menu_completion[icon+key]={}
-						my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
-					if subKey == keyword_web_content:
-						icon=""
-						path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
-						path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
-						if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
-							os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][subKey])+" "+source_dict[key][subKey])
-						menu_completion[icon+key]={}
-						my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
-
-					
-					if subKey == keyword_module_opn:
-						icon=""
-						path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
-						menu_completion[icon+key]=None
-					if subKey == keyword_module_ssh:
-						icon=""
-						path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
-						menu_completion[icon+key]=None
-					if subKey == keyword_module_cmd:
-						icon=""
-						path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
-						menu_completion[icon+key]=None
-					if subKey == keyword_module_cmd_c:
-						icon=""
-						path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
-						menu_completion[icon+key]=None
-					#if subKey == keyword_file_content_relative:
-						#my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
-						
-				
-				if isinstance(source_dict[key][subKey], dict):
-					icon=""
+		for subKey in source_dict[key]:
+			if not isinstance(source_dict[key][subKey],dict):
+				icon=""
+				if subKey == keyword_file_content_relative:
+					icon=""
+					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]={}
-					my_fun(source_dict[key], menu_completion[icon+key] ,path_entry_name+key)
+					my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
+				if subKey == keyword_web_content:
+					icon=""
+					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
+					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
+					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
+						#os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][subKey])+" "+source_dict[key][subKey])
+						downloadFromUrl(source_dict[key][subKey])
+					menu_completion[icon+key]={}
+					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
+				if subKey == keyword_gitlab_content_code_prompt_token:	
+					icon=""
+					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
+					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
+					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
+						downloadFromGitlabWithPromptToken(source_dict[key][subKey])
+					menu_completion[icon+key]={}
+					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
+				
+				if subKey == keyword_module_opn:
+					icon=""
+					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+					menu_completion[icon+key]=None
+				if subKey == keyword_module_ssh:
+					icon=""
+					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+					menu_completion[icon+key]=None
+				if subKey == keyword_module_cmd:
+					icon=""
+					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+					menu_completion[icon+key]=None
+				if subKey == keyword_module_cmd_c:
+					icon=""
+					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+					menu_completion[icon+key]=None
+				#if subKey == keyword_file_content_relative:
+					#my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
+					
+				
+			if isinstance(source_dict[key][subKey], dict):
+				icon=""
+				menu_completion[icon+key]={}
+				my_fun(source_dict[key], menu_completion[icon+key] ,path_entry_name+key)
 				
 menu_completion={}
 my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"")
@@ -95,8 +116,8 @@ completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
 
 bindings = KeyBindings()
 
-print(json.dumps(path_entry_name_content, sort_keys=False, indent=4))
-print(json.dumps(menu_completion, sort_keys=False, indent=4))
+#print(json.dumps(path_entry_name_content, sort_keys=False, indent=4))
+#print(json.dumps(menu_completion, sort_keys=False, indent=4))
 
 @bindings.add('c-c')
 def _(event):
@@ -116,9 +137,11 @@ def main():
 	prompt_id="path_"+prompt_id 
 	if  prompt_id in path_entry_name_content:
 		text=prompt_id 
-		print(text,path_entry_name_content[prompt_id]) 
 		if keyword_web_content in path_entry_name_content[prompt_id]:
-			os.system("curl -L -o "+tmpDir+os.path.basename(path_entry_name_content[prompt_id][keyword_web_content])+" "+path_entry_name_content[prompt_id][keyword_web_content])
+			downloadFromUrl(path_entry_name_content[prompt_id][keyword_web_content])
+			#os.system("curl -L -o "+tmpDir+os.path.basename(path_entry_name_content[prompt_id][keyword_web_content])+" "+path_entry_name_content[prompt_id][keyword_web_content])
+		if keyword_gitlab_content_code_prompt_token in path_entry_name_content[prompt_id]:
+			downloadFromGitlabWithPromptToken(path_entry_name_content[prompt_id][keyword_gitlab_content_code_prompt_token])
 		if keyword_module_ssh in path_entry_name_content[prompt_id]:
 			text = "ssh "+path_entry_name_content[prompt_id][keyword_module_ssh]
 			os.system(text)   

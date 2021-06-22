@@ -173,8 +173,8 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 * an improved interface with a space to display the description of an entry is planned
-* split code 
-* replace external command like curl
+* split code in module 
+* replace external bash command by python code
 <!--
 See the [open issues](https://github.com/github_username/repo_name/issues) for a list of proposed features (and known issues).
 

@@ -5,7 +5,7 @@ terms:
     cmd: "exec cool-retro-term &"
 links:
   google:
-    cmd: "xdg-open https://google.com"
+    opn: "https://google.com"
 shut:
   lock:
     cmd: "lock.sh"
@@ -13,4 +13,5 @@ shut:
     cmdP: "poweroff"
   #anotherSection: 
     #file_content_relative: subDir/anotherConf.yml
- 
+    #web_content: "https://raw.githubusercontent.com/thomas10-10/starterTree/master/configExample/config.yml"
+    #gitlab_api_content_prompt_token: "https://gitlab.xyz/api/v4/projects/127/wikis/test.yml" 
