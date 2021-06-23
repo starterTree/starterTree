@@ -138,7 +138,7 @@ to run:
 ```
 $ t
 ```
-A configuration must be in ~/.config/starterTree/config.yml.
+A configuration must be in `~/.config/starterTree/config.yml`
 
 There is a sample configuration file in git depot `exampleConfig/config.yml`
     
@@ -166,6 +166,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 * an improved interface with a space to display the description of an entry is planned
 * split code in module 
 * replace external bash command like curl, fc-list, grep  by python code
+* factoring code
 <!--
 See the [open issues](https://github.com/github_username/repo_name/issues) for a list of proposed features (and known issues).
 
