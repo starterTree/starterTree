@@ -152,21 +152,7 @@ or to manage several different configurations:
 ` alias toto1="t /other/myconfig.yml"`
 ` alias toto2="t /other/anOtherconfig.yml"`
  
-config file example:
-  
-```yaml
-main: #create menu main
-  toto: # create menu toto
-    link1: # create entry link1 who own attribute cmd
-      cmd: "xdg open google.com" # if link1 is chosen, this command will be executed
-      link1_2: # create sub entry link1_2 who own attribute cmd
-        cmd: "xdg open google.fr" # if link1_2 is chosen, this command will be executed
-    link2:
-      cmdP: "xdg open google.fr" # if link2 is chosen, this command will be executed after a confirmation
-    bibi: #create menu bibi
-      file_content_relative: dir/otherConf.yml # load the following config file in the section bibi
-  
- ```
+
 
 
 
