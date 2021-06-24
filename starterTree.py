@@ -65,10 +65,13 @@ def downloadFromUrl(url):
 def my_fun(source_dict,menu_completion,path_entry_name):
 	for key in source_dict:
 		path_entry_name_content["path_"+path_entry_name+key]={}
+		#path_entry_name_content["path_"+path_entry_name+key]=source_dict[key]
 
 		for subKey in source_dict[key]:
 			icon=""
 			if not isinstance(source_dict[key][subKey],dict):
+				path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
+				path_entry_name_content["path_"+path_entry_name+key+"--list"]["list"]=source_dict[key]
 				if subKey == keyword_file_content_relative:
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
@@ -76,9 +79,6 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 					my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 				if subKey == keyword_web_content:
 					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
-					path_entry_name_content["path_"+path_entry_name+key+"--list"][subKey]=source_dict[key][subKey]
-
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
 					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
@@ -88,9 +88,6 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 				if subKey == keyword_gitlab_content_code_prompt_token:	
 					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
-					path_entry_name_content["path_"+path_entry_name+key+"--list"]["list"]=source_dict[key][subKey]
-
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
 					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
@@ -121,8 +118,8 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 			if isinstance(source_dict[key][subKey], dict):
 				if detectNerdFont: icon=""
 				menu_completion[icon+key]={}
-				path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
-				path_entry_name_content["path_"+path_entry_name+key+"--list"][subKey]=source_dict[key][subKey]
+				#path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
+				#path_entry_name_content["path_"+path_entry_name+key+"--list"][subKey]=source_dict[key]
 				my_fun(source_dict[key], menu_completion[icon+key] ,path_entry_name+key)
 				
 menu_completion={}
@@ -132,8 +129,6 @@ completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
 
 bindings = KeyBindings()
 
-print(json.dumps(path_entry_name_content, sort_keys=False, indent=4))
-print(json.dumps(menu_completion, sort_keys=False, indent=4))
 
 @bindings.add('c-c')
 def _(event):
@@ -150,9 +145,33 @@ def main():
 				prompt_id=prompt_id.replace(i,"")
 	except:
 		exit()
+	if prompt_id == "--version":
+		print("version is 9569784e940d3115832272607f5d65f6611e8928 hash")
+		exit()
+	if prompt_id == "--debug_config":
+		print(json.dumps(path_entry_name_content, sort_keys=False, indent=4))
+		exit()
+	if prompt_id == "--debug_completion":
+		print(json.dumps(menu_completion, sort_keys=False, indent=4))
+		exit()
+	if prompt_id.split('=')[0] == "--update":
+		if len(prompt_id.split('=')) == 2:
+			#download /0.2/
+			os.system("cd /opt ; sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/"+prompt_id.split('=')[2]+"/starterTree.tar.gz' | sudo tar -xz")   
+		else:
+			os.system("cd /opt ; sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/last/starterTree.tar.gz' | sudo tar -xz")   
+			#download last
+		#if part2 == none
+		#then update laste comit
+		#or 
+		#==V2 download v2
+		exit()
+
 	prompt_id="path_"+prompt_id 
 	if  prompt_id in path_entry_name_content:
 		text=prompt_id 
+		if "show" in path_entry_name_content[prompt_id]:
+			print(path_entry_name_content[prompt_id]["show"])
 		if keyword_web_content in path_entry_name_content[prompt_id]:
 			downloadFromUrl(path_entry_name_content[prompt_id][keyword_web_content])
 		if keyword_gitlab_content_code_prompt_token in path_entry_name_content[prompt_id]:
@@ -178,7 +197,7 @@ def main():
 
 
 	else:
-            print("ERR: entry not found")
+	    print("ERR: entry not found")
 
 if __name__ == "__main__":
     main()
