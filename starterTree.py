@@ -76,6 +76,9 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 					my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 				if subKey == keyword_web_content:
 					if detectNerdFont: icon=""
+					path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
+					path_entry_name_content["path_"+path_entry_name+key+"--list"][subKey]=source_dict[key][subKey]
+
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
 					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
@@ -85,6 +88,9 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 				if subKey == keyword_gitlab_content_code_prompt_token:	
 					if detectNerdFont: icon=""
+					path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
+					path_entry_name_content["path_"+path_entry_name+key+"--list"]["list"]=source_dict[key][subKey]
+
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
 					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
@@ -115,6 +121,8 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 			if isinstance(source_dict[key][subKey], dict):
 				if detectNerdFont: icon=""
 				menu_completion[icon+key]={}
+				path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
+				path_entry_name_content["path_"+path_entry_name+key+"--list"][subKey]=source_dict[key][subKey]
 				my_fun(source_dict[key], menu_completion[icon+key] ,path_entry_name+key)
 				
 menu_completion={}
@@ -124,8 +132,8 @@ completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
 
 bindings = KeyBindings()
 
-#print(json.dumps(path_entry_name_content, sort_keys=False, indent=4))
-#print(json.dumps(menu_completion, sort_keys=False, indent=4))
+print(json.dumps(path_entry_name_content, sort_keys=False, indent=4))
+print(json.dumps(menu_completion, sort_keys=False, indent=4))
 
 @bindings.add('c-c')
 def _(event):
@@ -147,7 +155,6 @@ def main():
 		text=prompt_id 
 		if keyword_web_content in path_entry_name_content[prompt_id]:
 			downloadFromUrl(path_entry_name_content[prompt_id][keyword_web_content])
-			#os.system("curl -L -o "+tmpDir+os.path.basename(path_entry_name_content[prompt_id][keyword_web_content])+" "+path_entry_name_content[prompt_id][keyword_web_content])
 		if keyword_gitlab_content_code_prompt_token in path_entry_name_content[prompt_id]:
 			downloadFromGitlabWithPromptToken(path_entry_name_content[prompt_id][keyword_gitlab_content_code_prompt_token])
 		if keyword_module_ssh in path_entry_name_content[prompt_id]:
