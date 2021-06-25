@@ -70,8 +70,8 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 		for subKey in source_dict[key]:
 			icon=""
 			if not isinstance(source_dict[key][subKey],dict):
-				path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
-				path_entry_name_content["path_"+path_entry_name+key+"--list"]["list"]=source_dict[key]
+				path_entry_name_content["path_"+path_entry_name+key+"--show"]={}
+				path_entry_name_content["path_"+path_entry_name+key+"--show"]["show"]=source_dict[key]
 				if subKey == keyword_file_content_relative:
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
@@ -146,7 +146,7 @@ def main():
 	except:
 		exit()
 	if prompt_id == "--version":
-		print("version is 9569784e940d3115832272607f5d65f6611e8928 hash")
+		print("version is git rev-parse HEAD hash")
 		exit()
 	if prompt_id == "--debug_config":
 		print(json.dumps(path_entry_name_content, sort_keys=False, indent=4))
@@ -157,7 +157,7 @@ def main():
 	if prompt_id.split('=')[0] == "--update":
 		if len(prompt_id.split('=')) == 2:
 			#download /0.2/
-			os.system("cd /opt ; sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/"+prompt_id.split('=')[2]+"/starterTree.tar.gz' | sudo tar -xz")   
+			os.system("cd /opt ; sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/"+prompt_id.split('=')[1]+"/starterTree.tar.gz' | sudo tar -xz")   
 		else:
 			os.system("cd /opt ; sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/last/starterTree.tar.gz' | sudo tar -xz")   
 			#download last
