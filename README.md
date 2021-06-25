@@ -67,7 +67,6 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
-    <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
@@ -120,7 +119,7 @@ Here's a blank template to get started:
 1. Download the release and create symlink
    ```bash  
    cd /opt 
-   sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/last/starterTree.tar.gz' | sudo tar -xz   
+   sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/v0.6/starterTree.tar.gz' | sudo tar -xz   
    ```
 
 2. Create symlink
