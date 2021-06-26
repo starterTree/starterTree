@@ -40,6 +40,7 @@ try:
 except IndexError:
 	file_main=os.environ['HOME']+'/.config/starterTree/config.yml'
 
+promptTitle=os.path.basename(sys.argv[0])
 path_entry_name_content={}
 keyword_file_content_relative="file_content_relative"
 keyword_web_content="web_content"
@@ -72,11 +73,16 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 			if not isinstance(source_dict[key][subKey],dict):
 				path_entry_name_content["path_"+path_entry_name+key+"--show"]={}
 				path_entry_name_content["path_"+path_entry_name+key+"--show"]["show"]=source_dict[key]
+
+				if subKey == "starterTree_title":
+					global promptTitle
+					promptTitle=source_dict[key][subKey]
 				if subKey == keyword_file_content_relative:
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]={}
 					my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
+
 				if subKey == keyword_web_content:
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
@@ -136,7 +142,7 @@ def _(event):
 	event.app.exit()
 
 def main():
-	session = PromptSession(os.path.basename(sys.argv[0])+u" > ", completer=completer, mouse_support=True, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
+	session = PromptSession(promptTitle+u" > ", completer=completer, mouse_support=True, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
 	try:
 		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,).replace(" ","")
 		historyName=prompt_id
@@ -159,7 +165,7 @@ def main():
 			#download /0.2/
 			os.system("cd /opt ; sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/"+prompt_id.split('=')[1]+"/starterTree.tar.gz' | sudo tar -xz")   
 		else:
-			os.system("cd /opt ; sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/last/starterTree.tar.gz' | sudo tar -xz")   
+			os.system('cd /opt ; sudo curl -L "https://github.com/thomas10-10/starterTree/releases/download/$(basename $(curl -fsSLI -o /dev/null -w %{url_effective} https://github.com/thomas10-10/starterTree/releases/latest))/starterTree.tar.gz" | sudo tar -xz')   
 			#download last
 		#if part2 == none
 		#then update laste comit
