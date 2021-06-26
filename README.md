@@ -119,7 +119,7 @@ Here's a blank template to get started:
 1. Download the release and create symlink
    ```bash  
    cd /opt 
-   sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/v0.6/starterTree.tar.gz' | sudo tar -xz   
+   sudo curl -L "https://github.com/thomas10-10/starterTree/releases/download/$(basename $(curl -fsSLI -o /dev/null -w %{url_effective} https://github.com/thomas10-10/starterTree/releases/latest))/starterTree.tar.gz" | sudo tar -xz   
    ```
 
 2. Create symlink
