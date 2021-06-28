@@ -14,6 +14,7 @@ from prompt_toolkit.shortcuts import CompleteStyle,prompt
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.completion import FuzzyWordCompleter,FuzzyCompleter,WordCompleter
 from prompt_toolkit import PromptSession
+from prompt_toolkit.styles import Style
 from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.formatted_text import HTML
@@ -41,22 +42,35 @@ except IndexError:
 	file_main=os.environ['HOME']+'/.config/starterTree/config.yml'
 
 promptTitle=os.path.basename(sys.argv[0])
+if promptTitle == "starterTree.py":
+    promptTitle = ""
 path_entry_name_content={}
 keyword_file_content_relative="file_content_relative"
 keyword_web_content="web_content"
 keyword_gitlab_content_code_prompt_token="gitlab_api_content_prompt_token"
+keyword_github_content_code_prompt_token="github_api_content_prompt_token"
 keyword_module_cmd="cmd"
 keyword_module_cmd_c="cmdP"
 keyword_module_opn="www"
 keyword_module_ssh="ssh"
 modules=""
 absolute_path_main_config_file=os.path.dirname(file_main)+"/"
-def downloadFromGitlabWithPromptToken(url):
+style=Style.from_dict({})
+
+def downloadFromGitLabWithPromptToken(url):
 	token=prompt('token like ezzfegzgezcH: ', is_password=True)
 	r = requests.get(url, headers={'PRIVATE-TOKEN':token})
 	rep='\n'.join(r.json()["content"].split('\n')[1:])
 	with open(tmpDir+os.path.basename(url),"w") as f:
 		f.write(rep)
+
+def downloadFromGitHubWithPromptToken(url):
+	token=prompt('token like ezzfegzgezcH: ', is_password=True)
+	r = requests.get(url, headers={'Authorization':'token '+token,'Accept': 'application/vnd.github.v4.raw'})
+	rep='\n'.join(r.text.split('\n')[1:])
+	with open(tmpDir+os.path.basename(url),"w") as f:
+		f.write(rep)
+
 
 
 def downloadFromUrl(url):
@@ -77,27 +91,35 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 				if subKey == "starterTree_title":
 					global promptTitle
 					promptTitle=source_dict[key][subKey]
+				if subKey == "starterTree_theme":
+					if source_dict[key][subKey] == "green":
+						global style
+						style = Style.from_dict({
+							#'session': 'bg:#ffffff #000000',
+							'completion-menu.completion': 'bg:#008888 #ffffff',
+							'completion-menu.completion.current': 'bg:#00aaaa #000000',
+							'scrollbar.background': 'bg:#88aaaa',
+							'scrollbar.button': 'bg:#222222',
+							'prompt': '#00aaaa',
+							'prompt.arg.text': '#00aaaa',
+							#'prompt.arg.text': 'bg:#ffffff #00aaaa',
+						})
+
 				if subKey == keyword_file_content_relative:
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]={}
 					my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 
-				if subKey == keyword_web_content:
+				if subKey in [keyword_gitlab_content_code_prompt_token, keyword_github_content_code_prompt_token, keyword_web_content] :	
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
 					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
 						#os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][subKey])+" "+source_dict[key][subKey])
-						downloadFromUrl(source_dict[key][subKey])
-					menu_completion[icon+key]={}
-					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
-				if subKey == keyword_gitlab_content_code_prompt_token:	
-					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
-					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
-					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
-						downloadFromGitlabWithPromptToken(source_dict[key][subKey])
+						if subKey == keyword_gitlab_content_code_prompt_token: downloadFromGitLabWithPromptToken(source_dict[key][subKey])
+						if subKey == keyword_github_content_code_prompt_token: downloadFromGitHubWithPromptToken(source_dict[key][subKey])
+						if subKey == keyword_web_content: downloadFromUrl(source_dict[key][subKey])
 					menu_completion[icon+key]={}
 					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 				
@@ -123,10 +145,10 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 				
 			if isinstance(source_dict[key][subKey], dict):
 				if detectNerdFont: icon=""
-				menu_completion[icon+key]={}
+				menu_completion[icon+key+""]={}
 				#path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
 				#path_entry_name_content["path_"+path_entry_name+key+"--list"][subKey]=source_dict[key]
-				my_fun(source_dict[key], menu_completion[icon+key] ,path_entry_name+key)
+				my_fun(source_dict[key], menu_completion[icon+key+""] ,path_entry_name+key)
 				
 menu_completion={}
 my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"")
@@ -141,8 +163,11 @@ def _(event):
 #" Exit when `c-x` is pressed. "
 	event.app.exit()
 
+
+
+
 def main():
-	session = PromptSession(promptTitle+u" > ", completer=completer, mouse_support=True, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
+	session = PromptSession(promptTitle+u" > ", completer=completer, mouse_support=True,style=style, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
 	try:
 		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,).replace(" ","")
 		historyName=prompt_id
