@@ -64,6 +64,8 @@ def downloadFromGitLabWithPromptToken(url):
 	rep='\n'.join(r.json()["content"].split('\n')[1:])
 	with open(tmpDir+os.path.basename(url),"w") as f:
 		f.write(rep)
+	if file_extension == ".asc":
+		os.system("gpg --batch --yes --out "+tmpDir+os.path.basename(url)+" -d "+tmpDir+os.path.basename(url) )
 
 def downloadFromGitHubWithPromptToken(url):
 	print(url)
@@ -72,13 +74,18 @@ def downloadFromGitHubWithPromptToken(url):
 	rep='\n'.join(r.text.split('\n')[1:])
 	with open(tmpDir+os.path.basename(url),"w") as f:
 		f.write(rep)
-
-
+	filename, file_extension = os.path.splitext(tmpDir+os.path.basename(url))
+	if file_extension == ".asc":
+		os.system("gpg --batch --yes --out "+tmpDir+os.path.basename(url)+" -d "+tmpDir+os.path.basename(url) )
 
 def downloadFromUrl(url):
 	r = requests.get(url)
 	with open(tmpDir+os.path.basename(url),"w") as f:
 		f.write(r.text)
+	if file_extension == ".asc":
+		os.system("gpg --batch --yes --out "+tmpDir+os.path.basename(url)+" -d "+tmpDir+os.path.basename(url) )
+
+
 def my_fun(source_dict,menu_completion,path_entry_name):
 	for key in source_dict:
 		path_entry_name_content["path_"+path_entry_name+key]={}
@@ -117,6 +124,8 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
 					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+key+"--encrypt"]={}
+					path_entry_name_content["path_"+path_entry_name+key+"--encrypt"]["encryptable"]=source_dict[key][subKey]
 					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
 						#os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][subKey])+" "+source_dict[key][subKey])
 						if subKey == keyword_gitlab_content_code_prompt_token: downloadFromGitLabWithPromptToken(source_dict[key][subKey])
@@ -205,6 +214,8 @@ def main():
 		text=prompt_id 
 		if "show" in path_entry_name_content[prompt_id]:
 			print(path_entry_name_content[prompt_id]["show"])
+		if "encryptable" in path_entry_name_content[prompt_id]:
+			os.system("cat "+tmpDir+os.path.basename(path_entry_name_content[prompt_id]["encryptable"])+" | gpg -a --cipher-algo AES256 -c")			
 		if keyword_web_content in path_entry_name_content[prompt_id]:
 			downloadFromUrl(path_entry_name_content[prompt_id][keyword_web_content])
 		if keyword_gitlab_content_code_prompt_token in path_entry_name_content[prompt_id]:
