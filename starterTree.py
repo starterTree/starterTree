@@ -58,6 +58,7 @@ absolute_path_main_config_file=os.path.dirname(file_main)+"/"
 style=Style.from_dict({})
 
 def downloadFromGitLabWithPromptToken(url):
+	print(url)
 	token=prompt('token like ezzfegzgezcH: ', is_password=True)
 	r = requests.get(url, headers={'PRIVATE-TOKEN':token})
 	rep='\n'.join(r.json()["content"].split('\n')[1:])
@@ -65,6 +66,7 @@ def downloadFromGitLabWithPromptToken(url):
 		f.write(rep)
 
 def downloadFromGitHubWithPromptToken(url):
+	print(url)
 	token=prompt('token like ezzfegzgezcH: ', is_password=True)
 	r = requests.get(url, headers={'Authorization':'token '+token,'Accept': 'application/vnd.github.v4.raw'})
 	rep='\n'.join(r.text.split('\n')[1:])
@@ -207,6 +209,8 @@ def main():
 			downloadFromUrl(path_entry_name_content[prompt_id][keyword_web_content])
 		if keyword_gitlab_content_code_prompt_token in path_entry_name_content[prompt_id]:
 			downloadFromGitlabWithPromptToken(path_entry_name_content[prompt_id][keyword_gitlab_content_code_prompt_token])
+		if keyword_github_content_code_prompt_token in path_entry_name_content[prompt_id]:
+			downloadFromGitHubWithPromptToken(path_entry_name_content[prompt_id][keyword_github_content_code_prompt_token])
 		if keyword_module_ssh in path_entry_name_content[prompt_id]:
 			text = "ssh "+path_entry_name_content[prompt_id][keyword_module_ssh]
 			os.system(text)   
