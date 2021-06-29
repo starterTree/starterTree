@@ -131,6 +131,16 @@ Here's a blank template to get started:
 
 to enable icons, you must install nerd fonts [nerdFonts](https://www.nerdfonts.com/font-downloads)
 
+#### UPDATE 
+
+since version 0.7 you can update with:
+```
+#update to last versiob
+t > --update
+#update to precise version
+t > --update=v0.7
+```
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 to run:
