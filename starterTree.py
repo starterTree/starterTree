@@ -10,14 +10,16 @@ import yaml
 import pprint
 import json
 import requests
+#from prompt_toolkit.token import Token
 from prompt_toolkit.shortcuts import CompleteStyle,prompt
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.completion import FuzzyWordCompleter,FuzzyCompleter,WordCompleter
 from prompt_toolkit import PromptSession
 from prompt_toolkit.styles import Style
-from prompt_toolkit.application import run_in_terminal
+from prompt_toolkit.application import run_in_terminal,get_app_or_none
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.formatted_text import HTML
+#from prompt_toolkit.styles import style_from_dict
 
 
 listIcon=[]
@@ -55,6 +57,7 @@ keyword_module_opn="www"
 keyword_module_ssh="ssh"
 modules=""
 absolute_path_main_config_file=os.path.dirname(file_main)+"/"
+#style=Style.from_dict({Token.RPrompt: 'bg:#ff0066 #ffffff',})
 style=Style.from_dict({})
 
 def downloadFromGitLabWithPromptToken(url):
@@ -104,6 +107,7 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 					if source_dict[key][subKey] == "green":
 						global style
 						style = Style.from_dict({
+							#Token.RPrompt: 'bg:#ff0066 #ffffff',
 							#'session': 'bg:#ffffff #000000',
 							'completion-menu.completion': 'bg:#008888 #ffffff',
 							'completion-menu.completion.current': 'bg:#00aaaa #000000',
@@ -175,12 +179,28 @@ def _(event):
 	event.app.exit()
 
 
+def get_rprompt():
+	text=get_app_or_none().current_buffer.text.replace(" ","")
+	for i in text:
+			if i in listIcon:
+				text=text.replace(i,"")
+	text='path_'+text
+	if text in path_entry_name_content:
+		result=path_entry_name_content[text]
+		#return HTML('<aaa fg="white" bg="#008888">'+str(result)+'</aaa>')
+		return HTML('<aaa fg="black" bg="white">'+str(result)+'</aaa>')
+		#return [(Token, ' '),(Token.RPrompt, str(result)),]
+	else:
+		return('')
+	#return HTML(get_app_or_none().current_buffer.text)
+
+
 
 
 def main():
 	session = PromptSession(promptTitle+u" > ", completer=completer, mouse_support=True,style=style, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
 	try:
-		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,).replace(" ","")
+		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,rprompt=get_rprompt).replace(" ","")
 		historyName=prompt_id
 		for i in prompt_id:
 			if i in listIcon:
@@ -219,7 +239,7 @@ def main():
 		if keyword_web_content in path_entry_name_content[prompt_id]:
 			downloadFromUrl(path_entry_name_content[prompt_id][keyword_web_content])
 		if keyword_gitlab_content_code_prompt_token in path_entry_name_content[prompt_id]:
-			downloadFromGitlabWithPromptToken(path_entry_name_content[prompt_id][keyword_gitlab_content_code_prompt_token])
+			downloadFromGitLabWithPromptToken(path_entry_name_content[prompt_id][keyword_gitlab_content_code_prompt_token])
 		if keyword_github_content_code_prompt_token in path_entry_name_content[prompt_id]:
 			downloadFromGitHubWithPromptToken(path_entry_name_content[prompt_id][keyword_github_content_code_prompt_token])
 		if keyword_module_ssh in path_entry_name_content[prompt_id]:
