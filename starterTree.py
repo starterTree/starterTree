@@ -26,7 +26,7 @@ listIcon=[]
 detectNerdFont= False
 if not os.system("fc-list | grep -i nerd >/dev/null "):
     detectNerdFont= True
-    listIcon=['','','','','','','']
+    listIcon=['','','','','','','','']
 
 
 #from module.test import add
@@ -51,6 +51,7 @@ keyword_file_content_relative="file_content_relative"
 keyword_web_content="web_content"
 keyword_gitlab_content_code_prompt_token="gitlab_api_content_prompt_token"
 keyword_github_content_code_prompt_token="github_api_content_prompt_token"
+keyword_kubeconfig_file="kubeconfig_file"
 keyword_module_cmd="cmd"
 keyword_module_cmd_c="cmdP"
 keyword_module_opn="www"
@@ -67,6 +68,7 @@ def downloadFromGitLabWithPromptToken(url):
 	rep='\n'.join(r.json()["content"].split('\n')[1:])
 	with open(tmpDir+os.path.basename(url),"w") as f:
 		f.write(rep)
+	filename, file_extension = os.path.splitext(tmpDir+os.path.basename(url))
 	if file_extension == ".asc":
 		os.system("gpg --batch --yes --out "+tmpDir+os.path.basename(url)+" -d "+tmpDir+os.path.basename(url) )
 
@@ -85,10 +87,24 @@ def downloadFromUrl(url):
 	r = requests.get(url)
 	with open(tmpDir+os.path.basename(url),"w") as f:
 		f.write(r.text)
+	filename, file_extension = os.path.splitext(tmpDir+os.path.basename(url))
 	if file_extension == ".asc":
 		os.system("gpg --batch --yes --out "+tmpDir+os.path.basename(url)+" -d "+tmpDir+os.path.basename(url) )
 
-
+def startKubectl(path_file):
+	filename, file_extension = os.path.splitext(path_file)
+	if file_extension == ".asc":
+		os.system("gpg --batch --yes --out "+path_file+".decrypt"+" -d "+path_file )
+		path_file=path_file+".decrypt"
+	#kubectl config current-context
+	os.putenv("KUBECONFIG",os.path.expanduser(path_file))
+	icon=""
+	if detectNerdFont: icon=" "
+	os.putenv("ST","Kind-Kind "+icon)
+	os.system("bash")
+	if file_extension == ".asc":
+		os.remove(os.path.expanduser(path_file))
+		os.system("echo RELOADAGENT | gpg-connect-agent")
 def my_fun(source_dict,menu_completion,path_entry_name):
 	for key in source_dict:
 		path_entry_name_content["path_"+path_entry_name+key]={}
@@ -117,6 +133,12 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 							'prompt.arg.text': '#00aaaa',
 							#'prompt.arg.text': 'bg:#ffffff #00aaaa',
 						})
+				if subKey == keyword_kubeconfig_file:
+					if detectNerdFont: icon=""
+					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+key+"--encrypt"]={}
+					path_entry_name_content["path_"+path_entry_name+key+"--encrypt"]["encryptable-kube"]=source_dict[key][subKey]
+					menu_completion[icon+key]={}
 
 				if subKey == keyword_file_content_relative:
 					if detectNerdFont: icon=""
@@ -232,10 +254,14 @@ def main():
 	prompt_id="path_"+prompt_id 
 	if  prompt_id in path_entry_name_content:
 		text=prompt_id 
+		if keyword_kubeconfig_file in path_entry_name_content[prompt_id]:
+			startKubectl(path_entry_name_content[prompt_id][keyword_kubeconfig_file])
 		if "show" in path_entry_name_content[prompt_id]:
 			print(path_entry_name_content[prompt_id]["show"])
 		if "encryptable" in path_entry_name_content[prompt_id]:
 			os.system("cat "+tmpDir+os.path.basename(path_entry_name_content[prompt_id]["encryptable"])+" | gpg -a --cipher-algo AES256 -c")			
+		if "encryptable-kube" in path_entry_name_content[prompt_id]:
+			os.system("cat "+os.path.expanduser(path_entry_name_content[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
 		if keyword_web_content in path_entry_name_content[prompt_id]:
 			downloadFromUrl(path_entry_name_content[prompt_id][keyword_web_content])
 		if keyword_gitlab_content_code_prompt_token in path_entry_name_content[prompt_id]:
