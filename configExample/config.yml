@@ -1,17 +1,37 @@
-terms:
+mainName1:
   wezterm:
-    cmd: "exec wezterm &"
+    cmd: "exec wezterm &" # cmd -> execute a command shell
   cool-retro-term:
-    cmd: "exec cool-retro-term &"
-links:
+    cmdP: "exec cool-retro-term &" # cmdP -> execute a command shell with prompt
+mainName2:
   google:
-    web: "https://google.com"
-shut:
-  lock:
-    cmd: "lock.sh"
-  shutdown:
-    cmdP: "poweroff"
-  #anotherSection: 
-    #file_content_relative: subDir/anotherConf.yml
-    #web_content: "https://raw.githubusercontent.com/thomas10-10/starterTree/master/configExample/config.yml"
-    #gitlab_api_content_prompt_token: "https://gitlab.xyz/api/v4/projects/127/wikis/test.yml" 
+    www: "https://google.com" # www -> open a link with default navigator
+mainName3:
+  myServer:
+    ssh: "root@192.168.5.5" # ssh -> execute ssh command
+anOtherMain: 
+  file_content_relative: subDir/anotherConf.yml # read an other config file on relative path
+anOtherOtherMain:
+  web_content: "https://raw.githubusercontent.com/thomas10-10/starterTree/master/configExample/config.yml" # read other confir file from web file 
+  # if you want remove cache and reload this content # t> anOtherOtherMain --pull
+  # for info the cache is in ~/.starterTree
+  # its support encrypt file with gpg, the extension name must be .asc
+anOtherOtherMain2:
+  gitlab_api_content_prompt_token: "https://gitlab.xyz/api/v4/projects/127/wikis/test.yml" # read other config file from api gitlab, it will prompt your gitlab token
+  # if you want remove cache and reload this content # t> anOtherOtherMain2 --pull
+  # its support encrypt file with gpg, the extension name must be .asc
+anOtherOtherMain3:
+  github_api_content_prompt_token: https://api.github.com/repos/userFoo/PrivateDots/contents/perso.yml.asc # read other config file from api github, it will prompt your github token
+  # if you want remove cache and reload this content # t> anOtherOtherMain3 --pull
+  # its support encrypt file with gpg, the extension name must be .asc
+mySettingsNameisNotImportant:
+  starterTree_title: perso # change name starterTree left prompt
+  starterTree_theme: green # change theme starterTree to green
+kubernetes:
+  kinde:
+    kubeconfig_file: "~/.kube/kindLocal.asc" # execute bash prompt with export kubeconfig="~/.kube/kindLocal.asc"
+    # its support encrypt file with gpg, the extension name must be .asc
+
+
+
+  
