@@ -41,7 +41,7 @@
 
   <p align="center">
     command launcher organised in a tree structure with autocompletion <br>
-    <img src="https://i.imgur.com/Dl5eqcW.png" alt="Logo" width="950" height="150">
+    <img src="https://i.imgur.com/6tCEQvE.png" alt="Logo" width="950" height="150">
     <br />
   <!--
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
@@ -126,7 +126,14 @@ Here's a blank template to get started:
    ```bash
    sudo ln -s /opt/starterTree/starterTree /usr/local/bin/t
    ```
-   <!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.3/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
+
+<!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.3/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
+
+### Update ( only for >= V0.7)
+
+  ` t> --update` update to last version
+  
+  ` t> --update=v0.8` update to precise version 
 
 
 to enable icons, you must install nerd fonts [nerdFonts](https://www.nerdfonts.com/font-downloads)

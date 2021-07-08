@@ -18,7 +18,7 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.styles import Style
 from prompt_toolkit.application import run_in_terminal,get_app_or_none
 from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.formatted_text import HTML
+from prompt_toolkit.formatted_text import HTML,merge_formatted_text
 #from prompt_toolkit.styles import style_from_dict
 
 
@@ -115,7 +115,9 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 			if not isinstance(source_dict[key][subKey],dict):
 				path_entry_name_content["path_"+path_entry_name+key+"--show"]={}
 				path_entry_name_content["path_"+path_entry_name+key+"--show"]["show"]=source_dict[key]
-
+				if subKey == "starterTree_disableIcon":
+					global detectNerdFont
+					detectNerdFont= False
 				if subKey == "starterTree_title":
 					global promptTitle
 					promptTitle=source_dict[key][subKey]
@@ -129,10 +131,26 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 							'completion-menu.completion.current': 'bg:#00aaaa #000000',
 							'scrollbar.background': 'bg:#88aaaa',
 							'scrollbar.button': 'bg:#222222',
-							'prompt': '#00aaaa',
+							#'prompt': '#00aaaa',
 							'prompt.arg.text': '#00aaaa',
 							#'prompt.arg.text': 'bg:#ffffff #00aaaa',
 						})
+					if source_dict[key][subKey] == "grey":
+						style = Style.from_dict({
+							#Token.RPrompt: 'bg:#ff0066 #ffffff',
+							#'session': 'bg:#ffffff #000000',
+							'completion-menu.completion': 'bg:#444444 white',
+							'completion-menu.completion.current': 'bg:#666666 white',
+							'completion-menu.multi-column-meta': 'bg:green blue',
+							'completion-menu.completion fuzzymatch.outside': 'fg:white',
+							'completion-menu' : 'bg:#444444',
+							'scrollbar.background': 'bg:#88aaaa',
+							'scrollbar.button': 'bg:#222222',
+							#'prompt': 'bg:#444444 white',
+							'arg-toolbar': 'bg:white #00aaaa',
+							#'prompt.arg.text': 'bg:#ffffff #00aaaa',
+						})
+
 				if subKey == keyword_kubeconfig_file:
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
@@ -210,17 +228,26 @@ def get_rprompt():
 	if text in path_entry_name_content:
 		result=path_entry_name_content[text]
 		#return HTML('<aaa fg="white" bg="#008888">'+str(result)+'</aaa>')
-		return HTML('<aaa fg="black" bg="white">'+str(result)+'</aaa>')
+		#return merge_formatted_text([HTML('<aaa style="bold" fg="white" bg="#444444">'+"'"+str(result)+"'"+'</aaa>'),"dd"])
+		return str(result)
 		#return [(Token, ' '),(Token.RPrompt, str(result)),]
 	else:
 		return('')
 	#return HTML(get_app_or_none().current_buffer.text)
-
+import datetime
+def mainPrompt(title) ->HTML:
+	icon=" >"
+	version="V0.10"
+	#str(datetime.datetime.now())
+	if detectNerdFont: icon=" "
+	caseVersion=HTML('<aaa style="" fg="red" bg="#444444"> '+str(version)+'</aaa>')
+	promptUser=HTML('<aaa style="" fg="white" bg="#444444"> '+str(title+icon)+' </aaa>')
+	return merge_formatted_text([caseVersion,promptUser," "])
 
 
 
 def main():
-	session = PromptSession(promptTitle+u" > ", completer=completer, mouse_support=True,style=style, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
+	session = PromptSession(mainPrompt(promptTitle), completer=completer, mouse_support=True,style=style, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
 	try:
 		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,rprompt=get_rprompt).replace(" ","")
 		historyName=prompt_id
