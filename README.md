@@ -41,7 +41,8 @@
 
   <p align="center">
     command launcher organised in a tree structure with autocompletion <br>
-    <img src="https://i.imgur.com/6tCEQvE.png" alt="Logo" width="5000" height="170">
+    <img src="https://i.imgur.com/BD5IpJM.png" alt="Logo" width="700" height="170">
+     <br>with theme grey
     <br />
   <!--
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
