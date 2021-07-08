@@ -237,7 +237,7 @@ def get_rprompt():
 import datetime
 def mainPrompt(title) ->HTML:
 	icon=" >"
-	version="V0.10"
+	version="version is version"
 	#str(datetime.datetime.now())
 	if detectNerdFont: icon=" "
 	caseVersion=HTML('<aaa style="" fg="red" bg="#444444"> '+str(version)+'</aaa>')
