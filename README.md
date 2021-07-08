@@ -67,7 +67,6 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
-    <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
@@ -80,6 +79,7 @@
     <!--<li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
+    -->
   </ol>
 </details>
 
@@ -119,7 +119,7 @@ Here's a blank template to get started:
 1. Download the release and create symlink
    ```bash  
    cd /opt 
-   sudo curl -L 'https://github.com/thomas10-10/starterTree/releases/download/v0.3/starterTree.tar.gz' | sudo tar -xz   
+   sudo curl -L "https://github.com/thomas10-10/starterTree/releases/download/$(basename $(curl -fsSLI -o /dev/null -w %{url_effective} https://github.com/thomas10-10/starterTree/releases/latest))/starterTree.tar.gz" | sudo tar -xz   
    ```
 
 2. Create symlink
@@ -131,13 +131,23 @@ Here's a blank template to get started:
 
 to enable icons, you must install nerd fonts [nerdFonts](https://www.nerdfonts.com/font-downloads)
 
+#### UPDATE 
+
+since version 0.7 you can update with:
+```
+#update to last versiob
+t > --update
+#update to precise version
+t > --update=v0.7
+```
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 to run:
 ```
 $ t
 ```
-A configuration must be in ~/.config/starterTree/config.yml.
+A configuration must be in `~/.config/starterTree/config.yml`
 
 There is a sample configuration file in git depot `exampleConfig/config.yml`
     
@@ -151,21 +161,7 @@ or to manage several different configurations:
 ` alias toto1="t /other/myconfig.yml"`
 ` alias toto2="t /other/anOtherconfig.yml"`
  
-config file example:
-  
-```yaml
-main: #create menu main
-  toto: # create menu toto
-    link1: # create entry link1 who own attribute cmd
-      cmd: "xdg open google.com" # if link1 is chosen, this command will be executed
-      link1_2: # create sub entry link1_2 who own attribute cmd
-        cmd: "xdg open google.fr" # if link1_2 is chosen, this command will be executed
-    link2:
-      cmdP: "xdg open google.fr" # if link2 is chosen, this command will be executed after a confirmation
-    bibi: #create menu bibi
-      file_content_relative: dir/otherConf.yml # load the following config file in the section bibi
-  
- ```
+
 
 
 
@@ -179,6 +175,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 * an improved interface with a space to display the description of an entry is planned
 * split code in module 
 * replace external bash command like curl, fc-list, grep  by python code
+* factoring code
 <!--
 See the [open issues](https://github.com/github_username/repo_name/issues) for a list of proposed features (and known issues).
 
