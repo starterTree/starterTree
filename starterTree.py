@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# TODO voir rempacer icon par entree ? ou/et sinon incruster icone > (ou toutes icons ?) dans le parseur
+
 from sys import exit
 
 import os
 import sys
-
+import time
 import yaml
 import pprint
 import json
@@ -107,14 +109,16 @@ def startKubectl(path_file):
 		os.system("echo RELOADAGENT | gpg-connect-agent")
 def my_fun(source_dict,menu_completion,path_entry_name):
 	for key in source_dict:
-		path_entry_name_content["path_"+path_entry_name+key]={}
+		keya=key.encode('ascii',errors='ignore').decode()
+
+		path_entry_name_content["path_"+path_entry_name+keya]={}
 		#path_entry_name_content["path_"+path_entry_name+key]=source_dict[key]
 
 		for subKey in source_dict[key]:
 			icon=""
 			if not isinstance(source_dict[key][subKey],dict):
-				path_entry_name_content["path_"+path_entry_name+key+"--show"]={}
-				path_entry_name_content["path_"+path_entry_name+key+"--show"]["show"]=source_dict[key]
+				path_entry_name_content["path_"+path_entry_name+keya+"--show"]={}
+				path_entry_name_content["path_"+path_entry_name+keya+"--show"]["show"]=source_dict[key]
 				if subKey == "starterTree_disableIcon":
 					global detectNerdFont
 					detectNerdFont= False
@@ -153,46 +157,46 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 
 				if subKey == keyword_kubeconfig_file:
 					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
-					path_entry_name_content["path_"+path_entry_name+key+"--encrypt"]={}
-					path_entry_name_content["path_"+path_entry_name+key+"--encrypt"]["encryptable-kube"]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya+"--encrypt"]={}
+					path_entry_name_content["path_"+path_entry_name+keya+"--encrypt"]["encryptable-kube"]=source_dict[key][subKey]
 					menu_completion[icon+key]={}
 
 				if subKey == keyword_file_content_relative:
 					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]={}
 					my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 
 				if subKey in [keyword_gitlab_content_code_prompt_token, keyword_github_content_code_prompt_token, keyword_web_content] :	
 					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+key+"--pull"]={}
-					path_entry_name_content["path_"+path_entry_name+key+"--pull"][subKey]=source_dict[key][subKey]
-					path_entry_name_content["path_"+path_entry_name+key+"--encrypt"]={}
-					path_entry_name_content["path_"+path_entry_name+key+"--encrypt"]["encryptable"]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya+"--pull"]={}
+					path_entry_name_content["path_"+path_entry_name+keya+"--pull"][subKey]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya+"--encrypt"]={}
+					path_entry_name_content["path_"+path_entry_name+keya+"--encrypt"]["encryptable"]=source_dict[key][subKey]
 					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
 						#os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][subKey])+" "+source_dict[key][subKey])
 						if subKey == keyword_gitlab_content_code_prompt_token: downloadFromGitLabWithPromptToken(source_dict[key][subKey])
 						if subKey == keyword_github_content_code_prompt_token: downloadFromGitHubWithPromptToken(source_dict[key][subKey])
 						if subKey == keyword_web_content: downloadFromUrl(source_dict[key][subKey])
 					menu_completion[icon+key]={}
-					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
+					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya)
 				
 				if subKey == keyword_module_opn:
 					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_ssh:
 					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_cmd:
 					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_cmd_c:
 					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+key][subKey]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				#if subKey == keyword_file_content_relative:
 					#my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
@@ -203,7 +207,7 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 				menu_completion[icon+key+""]={}
 				#path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
 				#path_entry_name_content["path_"+path_entry_name+key+"--list"][subKey]=source_dict[key]
-				my_fun(source_dict[key], menu_completion[icon+key+""] ,path_entry_name+key)
+				my_fun(source_dict[key], menu_completion[icon+key+""] ,path_entry_name+keya)
 				
 menu_completion={}
 my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"")
@@ -219,11 +223,20 @@ def _(event):
 	event.app.exit()
 
 
+#print(type(text))
+def get_toolbar():
+	return "Bottom toolbar: time=%r" % time.time()
+
+
 def get_rprompt():
+	#text=re.sub(r' .',''," "+text)
+	#text=text.encode('ascii',errors='ignore').decode()
 	text=get_app_or_none().current_buffer.text.replace(" ","")
+	text=text.encode('ascii',errors='ignore').decode()
 	for i in text:
 			if i in listIcon:
-				text=text.replace(i,"")
+				pass
+				#text=text.replace(i,"")
 	text='path_'+text
 	if text in path_entry_name_content:
 		result=path_entry_name_content[text]
@@ -237,7 +250,10 @@ def get_rprompt():
 import datetime
 def mainPrompt(title) ->HTML:
 	icon=" >"
-	version="version is version"
+	version="0.12"
+	version="0.12"
+	version="v0.12"
+	version="vversion is version"
 	#str(datetime.datetime.now())
 	if detectNerdFont: icon=" "
 	caseVersion=HTML('<aaa style="" fg="red" bg="#444444"> '+str(version)+'</aaa>')
@@ -251,10 +267,13 @@ def main():
 	try:
 		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,rprompt=get_rprompt).replace(" ","")
 		historyName=prompt_id
+		prompt_id=prompt_id.encode('ascii',errors='ignore').decode()
 		for i in prompt_id:
 			if i in listIcon:
-				prompt_id=prompt_id.replace(i,"")
+				pass
+				#prompt_id=prompt_id.replace(i,"")
 	except:
+		#print("error")
 		exit()
 	if prompt_id == "--version":
 		print("version is git rev-parse HEAD hash")
@@ -322,3 +341,4 @@ if __name__ == "__main__":
     main()
 
 exit()
+# nice icon ⏽
