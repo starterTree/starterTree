@@ -4,15 +4,14 @@
 # TODO voir rempacer icon par entree ? ou/et sinon incruster icone > (ou toutes icons ?) dans le parseur
 
 from sys import exit
-
+import texttable
 import os
 import sys
 import time
 import yaml
-import pprint
 import json
 import requests
-#from prompt_toolkit.token import Token
+import re
 from prompt_toolkit.shortcuts import CompleteStyle,prompt
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.completion import FuzzyWordCompleter,FuzzyCompleter,WordCompleter
@@ -21,8 +20,10 @@ from prompt_toolkit.styles import Style
 from prompt_toolkit.application import run_in_terminal,get_app_or_none
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.formatted_text import HTML,merge_formatted_text
-#from prompt_toolkit.styles import style_from_dict
-
+import texttable as tt
+import themes.green
+import themes.grey
+#import colorama 
 
 listIcon=[]
 detectNerdFont= False
@@ -49,6 +50,7 @@ promptTitle=os.path.basename(sys.argv[0])
 if promptTitle == "starterTree.py":
     promptTitle = ""
 path_entry_name_content={}
+path_entry_name_content_cmd={}
 keyword_file_content_relative="file_content_relative"
 keyword_web_content="web_content"
 keyword_gitlab_content_code_prompt_token="gitlab_api_content_prompt_token"
@@ -99,15 +101,15 @@ def startKubectl(path_file):
 		os.system("gpg --batch --yes --out "+path_file+".decrypt"+" -d "+path_file )
 		path_file=path_file+".decrypt"
 	#kubectl config current-context
-	os.putenv("KUBECONFIG",os.path.expanduser(path_file))
+	os.putenv("KUBECONFIG",os.path.version is versionanduser(path_file))
 	icon=""
 	if detectNerdFont: icon=" "
 	os.putenv("ST","Kind-Kind "+icon)
 	os.system("bash")
 	if file_extension == ".asc":
-		os.remove(os.path.expanduser(path_file))
+		os.remove(os.path.version is versionanduser(path_file))
 		os.system("echo RELOADAGENT | gpg-connect-agent")
-def my_fun(source_dict,menu_completion,path_entry_name):
+def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 	for key in source_dict:
 		keya=key.encode('ascii',errors='ignore').decode()
 
@@ -117,8 +119,11 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 		for subKey in source_dict[key]:
 			icon=""
 			if not isinstance(source_dict[key][subKey],dict):
-				path_entry_name_content["path_"+path_entry_name+keya+"--show"]={}
-				path_entry_name_content["path_"+path_entry_name+keya+"--show"]["show"]=source_dict[key]
+				path_entry_name_content["path_"+path_entry_name+keya]["path"]=path_entry_name_path+"/"
+				path_entry_name_content["path_"+path_entry_name+keya]["name"]=keya
+				path_entry_name_content["path_"+path_entry_name+keya]["tags"]={}
+				path_entry_name_content_cmd["path_"+path_entry_name+keya+"--show"]={}
+				path_entry_name_content_cmd["path_"+path_entry_name+keya+"--show"]["show"]={}
 				if subKey == "starterTree_disableIcon":
 					global detectNerdFont
 					detectNerdFont= False
@@ -126,75 +131,56 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 					global promptTitle
 					promptTitle=source_dict[key][subKey]
 				if subKey == "starterTree_theme":
-					if source_dict[key][subKey] == "green":
-						global style
-						style = Style.from_dict({
-							#Token.RPrompt: 'bg:#ff0066 #ffffff',
-							#'session': 'bg:#ffffff #000000',
-							'completion-menu.completion': 'bg:#008888 #ffffff',
-							'completion-menu.completion.current': 'bg:#00aaaa #000000',
-							'scrollbar.background': 'bg:#88aaaa',
-							'scrollbar.button': 'bg:#222222',
-							#'prompt': '#00aaaa',
-							'prompt.arg.text': '#00aaaa',
-							#'prompt.arg.text': 'bg:#ffffff #00aaaa',
-						})
-					if source_dict[key][subKey] == "grey":
-						style = Style.from_dict({
-							#Token.RPrompt: 'bg:#ff0066 #ffffff',
-							#'session': 'bg:#ffffff #000000',
-							'completion-menu.completion': 'bg:#444444 white',
-							'completion-menu.completion.current': 'bg:#666666 white',
-							'completion-menu.multi-column-meta': 'bg:green blue',
-							'completion-menu.completion fuzzymatch.outside': 'fg:white',
-							'completion-menu' : 'bg:#444444',
-							'scrollbar.background': 'bg:#88aaaa',
-							'scrollbar.button': 'bg:#222222',
-							#'prompt': 'bg:#444444 white',
-							'arg-toolbar': 'bg:white #00aaaa',
-							#'prompt.arg.text': 'bg:#ffffff #00aaaa',
-						})
-
+					global style
+					if source_dict[key][subKey] == "green": style = Style.from_dict(themes.green.completionMenu)
+					if source_dict[key][subKey] == "grey":  style = Style.from_dict(themes.grey.completionMenu)
+				
+				if subKey == "tags":
+					path_entry_name_content["path_"+path_entry_name+keya]["tags"]=source_dict[key][subKey]
 				if subKey == keyword_kubeconfig_file:
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
-					path_entry_name_content["path_"+path_entry_name+keya+"--encrypt"]={}
-					path_entry_name_content["path_"+path_entry_name+keya+"--encrypt"]["encryptable-kube"]=source_dict[key][subKey]
+					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--encrypt"]={}
+					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--encrypt"]["encryptable-kube"]=source_dict[key][subKey]
 					menu_completion[icon+key]={}
 
 				if subKey == keyword_file_content_relative:
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]={}
-					my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
+					my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
 
 				if subKey in [keyword_gitlab_content_code_prompt_token, keyword_github_content_code_prompt_token, keyword_web_content] :	
 					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+keya+"--pull"]={}
-					path_entry_name_content["path_"+path_entry_name+keya+"--pull"][subKey]=source_dict[key][subKey]
-					path_entry_name_content["path_"+path_entry_name+keya+"--encrypt"]={}
-					path_entry_name_content["path_"+path_entry_name+keya+"--encrypt"]["encryptable"]=source_dict[key][subKey]
+					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--pull"]={}
+					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--pull"][subKey]=source_dict[key][subKey]
+					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--encrypt"]={}
+					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--encrypt"]["encryptable"]=source_dict[key][subKey]
 					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
 						#os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][subKey])+" "+source_dict[key][subKey])
 						if subKey == keyword_gitlab_content_code_prompt_token: downloadFromGitLabWithPromptToken(source_dict[key][subKey])
 						if subKey == keyword_github_content_code_prompt_token: downloadFromGitHubWithPromptToken(source_dict[key][subKey])
 						if subKey == keyword_web_content: downloadFromUrl(source_dict[key][subKey])
 					menu_completion[icon+key]={}
-					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya)
+					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
 				
 				if subKey == keyword_module_opn:
+					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_ssh:
+					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_cmd:
+					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_cmd_c:
+					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
@@ -207,10 +193,11 @@ def my_fun(source_dict,menu_completion,path_entry_name):
 				menu_completion[icon+key+""]={}
 				#path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
 				#path_entry_name_content["path_"+path_entry_name+key+"--list"][subKey]=source_dict[key]
-				my_fun(source_dict[key], menu_completion[icon+key+""] ,path_entry_name+keya)
+				my_fun(source_dict[key], menu_completion[icon+key+""] ,path_entry_name+keya,path_entry_name_path+"/"+keya)
+				#del path_entry_name_content["path_"+path_entry_name+keya]
 				
 menu_completion={}
-my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"")
+my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"","")
 
 completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
 
@@ -250,9 +237,7 @@ def get_rprompt():
 import datetime
 def mainPrompt(title) ->HTML:
 	icon=" >"
-	version="0.12"
-	version="0.12"
-	version="v0.12"
+	#version=""
 	version="vversion is version"
 	#str(datetime.datetime.now())
 	if detectNerdFont: icon=" "
@@ -260,12 +245,188 @@ def mainPrompt(title) ->HTML:
 	promptUser=HTML('<aaa style="" fg="white" bg="#444444"> '+str(title+icon)+' </aaa>')
 	return merge_formatted_text([caseVersion,promptUser," "])
 
+def getPromptText():
+	icon="search > ssh_cmd >"
+	if detectNerdFont : icon = "     "
+	session = PromptSession(icon+" ",style=style,key_bindings=bindings)
+	prompt= session.prompt(pre_run=session.default_buffer.start_completion,default="",rprompt=get_rprompt)
+	prompt= prompt.replace('"','')
+	prompt=prompt.encode('ascii',errors='ignore').decode()
+	return prompt
 
+def ssh_cmd(result):
+	promptT= getPromptText()
+	for r in result :
+		if keyword_module_ssh in path_entry_name_content[r]:
+			tab = tt.Texttable(max_width=os.get_terminal_size().columns)
+			headings = ['N°','Path','Name','Type','Tags']
+			tab.set_chars(["_","","","_"])
+			tab.header(headings)
+			#if 'type' not in path_entry_name_content[r]: path_entry_name_content[r]["type"]="none"
+			tab.add_row([path_entry_name_content[r]["tmp_id"],path_entry_name_content[r]["path"],path_entry_name_content[r]["name"],path_entry_name_content[r]["type"],path_entry_name_content[r]["tags"]])
+			print()
+			print(tab.draw())
+			os.system("ssh "+path_entry_name_content[r][keyword_module_ssh]+ " "+promptT)
+	ssh_cmd(result)	
+def getTag(result):
+	myComplete={}
+	myCompleteL=[]
+	for r in result:
+		if "tags" in path_entry_name_content[r]:
+			if type(path_entry_name_content[r]["tags"]) == list:
+				for i in path_entry_name_content[r]["tags"]:
+					myComplete[i]={}	
+	for i in myComplete:
+		myCompleteL.append(i)	
+	#promptT = getPromptText()
+
+	completer=FuzzyCompleter(WordCompleter(myCompleteL,ignore_case=True))
+   
+	print(myCompleteL)
+	icon="search > tag >"
+	if detectNerdFont : icon = "   "
+	session = PromptSession(icon+" ",style=style,key_bindings=bindings)
+	prompt= session.prompt(pre_run=session.default_buffer.start_completion,default="",completer=completer)
+
+
+
+
+	
+def getPromptSearch(default_promptSearch):
+	completer=WordCompleter(
+		[
+		    "name=",
+		    "tag=",
+		    "type=",
+		    "path=",
+		    "tag",
+		    "ssh_cmd",
+		    "exe",
+		    "action"
+		],
+		meta_dict={
+		    "name=": " support regex case insitive",
+		    "tag=": " exact tag,case insitive",
+		    "ape": "Apes (Hominoidea) are a branch of Old World tailless anthropoid catarrhine primates ",
+		    "bat": "Bats are mammals of the order Chiroptera",
+		},
+		ignore_case=True,
+	)
+   
+	icon=" search >"
+	if detectNerdFont: icon=" "
+	session = PromptSession(icon+" ",completer=completer,style=style,key_bindings=bindings)
+	prompt= session.prompt(pre_run=session.default_buffer.start_completion,default=default_promptSearch,rprompt=get_rprompt).replace('"','')
+	prompt=prompt.encode('ascii',errors='ignore').decode()
+	#print(prompt.split(" "))
+	result=[]
+	tab = tt.Texttable(max_width=os.get_terminal_size().columns)
+	headings = ['N°','Path','Name','Type','Tags']
+	tab.header(headings)
+	tab.set_chars(["_","","","_"])
+	tab.set_chars(["_","","","_"])
+	#tab.set_cols_align(["l", "c", "c"])
+	if not prompt.replace(" ","") == "" :
+		query=""
+
+		#		pass 
+		#	if i in "AND,OR":
+		#		query=query+i+" "
+		#	elif len(i.split("=")) == 2:
+		#		if not i.split("=")[1] == "":
+		#			if i.split("=")[0] == "pattern":
+		#				pattern=i.split("=")[1]
+		#		query=query+i+" "
+		n=0
+		for r in path_entry_name_content:
+			queryT="" 
+			if len(path_entry_name_content[r]) > 0:
+				#print(prompt.split(" "))
+				prec=""
+				precCat=" "
+				for i in prompt.split(" "):
+					if i == "not":
+						if prec == precCat:
+							queryT=queryT+"and"+" "
+						
+					if i.split("=")[0] in "tag,name,type,path": 
+						if len(i.split("=")) == 2:
+							if prec == precCat:
+								queryT=queryT+"and"+" "
+							if i.split("=")[0] == "tag" :
+								if 'tags' in path_entry_name_content[r] and (i.split("=")[1].lower() in path_entry_name_content[r]["tags"] or i.split("=")[1].upper() in path_entry_name_content[r]["tags"]):
+									queryT=queryT+str(True)+" "
+								else: 	
+									queryT=queryT+str(False)+" "
+							if i.split("=")[0] == "name" :
+								queryT=queryT+str(bool(re.search(i.split("=")[1],path_entry_name_content[r]["name"],re.IGNORECASE)))+" "
+							if i.split("=")[0] == "path" :
+								queryT=queryT+str(bool(re.search(i.split("=")[1],path_entry_name_content[r]["path"],re.IGNORECASE)))+" "
+							if i.split("=")[0] == "type" :
+								if 'type' in path_entry_name_content[r] and (i.split("=")[1].lower() == path_entry_name_content[r]["type"] or i.split("=")[1].upper() == path_entry_name_content[r]["type"]):
+									queryT=queryT+str(True)+" "
+								else: queryT=queryT+str(False)+" "
+
+							precCat=i
+						else:
+							pass
+							#if getPromptSearchCat()
+					if i in "and,or,not":
+						queryT=queryT+i+" "
+					if i not in '""," "': prec=i
+				#print(queryT)
+				if queryT.replace(" ","") == "" or eval(str(queryT)) :
+					n=n+1
+					result.append(r)
+					path_entry_name_content[r]["tmp_id"]=n
+					if 'type' not in path_entry_name_content[r]: path_entry_name_content[r]["type"]="none"
+					tab.add_row([n,path_entry_name_content[r]["path"],path_entry_name_content[r]["name"],path_entry_name_content[r]["type"],path_entry_name_content[r]["tags"]])
+						#tab.add_row([colorama.Style.RESET_ALL+str(n),path_entry_name_content[r]["name"],str(path_entry_name_content[r]["tags"])])
+			
+		print(tab.draw())
+		if "tag" in prompt.split(" "):
+			try:
+				getTag(result)
+			except:
+				pass
+		if "ssh_cmd" in prompt.split(" "):
+			print("ssh_cmd")
+			try:
+				ssh_cmd(result)
+				#promptT= getPromptText()
+				#for r in result:
+				#	if keyword_module_ssh in path_entry_name_content[r]:
+				#		os.system("ssh "+path_entry_name_content[r][keyword_module_ssh]+ " "+promptT)
+				
+			except Exception as e:  
+				print(str(e))
+
+					#print("execute")
+					#getPromptText()
+
+
+		getPromptSearch(prompt)
+						#os.system("ssh -t"+path_entry_name_content[r][keyword_module_ssh]+ "blabla")
+
+#								for r in path_entry_name_content:
+#							if len(path_entry_name_content[r]) > 0:
+#									query=query+str(bool(re.search(pattern,r)))+" "
+	else:
+		n=0
+		for r in path_entry_name_content:
+			if len(path_entry_name_content[r]) > 0:
+				n=n+1
+				if 'type' not in path_entry_name_content[r]: path_entry_name_content[r]["type"]="none"
+				tab.add_row([n,path_entry_name_content[r]["path"],path_entry_name_content[r]["name"],path_entry_name_content[r]["type"],path_entry_name_content[r]["tags"]])
+		#getPromptSearch("name=")
+		print(tab.draw())
+		getPromptSearch(prompt)
+		pass # tout afficher/prendre
 
 def main():
-	session = PromptSession(mainPrompt(promptTitle), completer=completer, mouse_support=True,style=style, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
+	session = PromptSession(mainPrompt(promptTitle), completer=completer, mouse_support=False,style=style, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
 	try:
-		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,rprompt=get_rprompt).replace(" ","")
+		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,rprompt=get_rprompt,default="").replace(" ","")
 		historyName=prompt_id
 		prompt_id=prompt_id.encode('ascii',errors='ignore').decode()
 		for i in prompt_id:
@@ -275,11 +436,20 @@ def main():
 	except:
 		#print("error")
 		exit()
+	if prompt_id == "--search":
+		try:
+			getPromptSearch("")
+		except:
+			main()
+		exit()
 	if prompt_id == "--version":
 		print("version is git rev-parse HEAD hash")
 		exit()
 	if prompt_id == "--debug_config":
 		print(json.dumps(path_entry_name_content, sort_keys=False, indent=4))
+		exit()
+	if prompt_id == "--debug_config_cmd":
+		print(json.dumps(path_entry_name_content_cmd, sort_keys=False, indent=4))
 		exit()
 	if prompt_id == "--debug_completion":
 		print(json.dumps(menu_completion, sort_keys=False, indent=4))
@@ -298,22 +468,25 @@ def main():
 		exit()
 
 	prompt_id="path_"+prompt_id 
+	if  prompt_id in path_entry_name_content_cmd:
+		if "show" in path_entry_name_content_cmd[prompt_id]:
+			print(path_entry_name_content[prompt_id.replace("--show","")])
+		if "encryptable" in path_entry_name_content_cmd[prompt_id]:
+			os.system("cat "+tmpDir+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable"])+" | gpg -a --cipher-algo AES256 -c")			
+		if "encryptable-kube" in path_entry_name_content_cmd[prompt_id]:
+			os.system("cat "+os.path.version is versionanduser(path_entry_name_content_cmd[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
+		if keyword_web_content in path_entry_name_content_cmd[prompt_id]:
+			downloadFromUrl(path_entry_name_content[prompt_id.replace("--pull","")][keyword_web_content])
+		if keyword_gitlab_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
+			downloadFromGitLabWithPromptToken(path_entry_name_content[prompt_id.replace("--pull","")][keyword_gitlab_content_code_prompt_token])
+		if keyword_github_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
+			downloadFromGitHubWithPromptToken(path_entry_name_content[prompt_id.replace("--pull","")][keyword_github_content_code_prompt_token])
+		exit()
+
 	if  prompt_id in path_entry_name_content:
 		text=prompt_id 
 		if keyword_kubeconfig_file in path_entry_name_content[prompt_id]:
 			startKubectl(path_entry_name_content[prompt_id][keyword_kubeconfig_file])
-		if "show" in path_entry_name_content[prompt_id]:
-			print(path_entry_name_content[prompt_id]["show"])
-		if "encryptable" in path_entry_name_content[prompt_id]:
-			os.system("cat "+tmpDir+os.path.basename(path_entry_name_content[prompt_id]["encryptable"])+" | gpg -a --cipher-algo AES256 -c")			
-		if "encryptable-kube" in path_entry_name_content[prompt_id]:
-			os.system("cat "+os.path.expanduser(path_entry_name_content[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
-		if keyword_web_content in path_entry_name_content[prompt_id]:
-			downloadFromUrl(path_entry_name_content[prompt_id][keyword_web_content])
-		if keyword_gitlab_content_code_prompt_token in path_entry_name_content[prompt_id]:
-			downloadFromGitLabWithPromptToken(path_entry_name_content[prompt_id][keyword_gitlab_content_code_prompt_token])
-		if keyword_github_content_code_prompt_token in path_entry_name_content[prompt_id]:
-			downloadFromGitHubWithPromptToken(path_entry_name_content[prompt_id][keyword_github_content_code_prompt_token])
 		if keyword_module_ssh in path_entry_name_content[prompt_id]:
 			text = "ssh "+path_entry_name_content[prompt_id][keyword_module_ssh]
 			os.system(text)   
@@ -335,7 +508,8 @@ def main():
 
 
 	else:
-	    print("ERR: entry not found")
+		print("ERR: entry not found")
+		main()
 
 if __name__ == "__main__":
     main()
