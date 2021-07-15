@@ -23,6 +23,7 @@ from prompt_toolkit.formatted_text import HTML,merge_formatted_text
 import texttable as tt
 import themes.green
 import themes.grey
+import modules.url
 #import colorama 
 
 listIcon=[]
@@ -476,7 +477,8 @@ def main():
 		if "encryptable-kube" in path_entry_name_content_cmd[prompt_id]:
 			os.system("cat "+os.path.version is versionanduser(path_entry_name_content_cmd[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
 		if keyword_web_content in path_entry_name_content_cmd[prompt_id]:
-			downloadFromUrl(path_entry_name_content[prompt_id.replace("--pull","")][keyword_web_content])
+			modules.url.launch(path_entry_name_content=path_entry_name_content,prompt_id=prompt_id,keyword_web_content=keyword_web_content,tmpDir=tmpDir)
+			#downloadFromUrl(path_entry_name_content[prompt_id.replace("--pull","")][keyword_web_content])
 		if keyword_gitlab_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
 			downloadFromGitLabWithPromptToken(path_entry_name_content[prompt_id.replace("--pull","")][keyword_gitlab_content_code_prompt_token])
 		if keyword_github_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
@@ -491,8 +493,9 @@ def main():
 			text = "ssh "+path_entry_name_content[prompt_id][keyword_module_ssh]
 			os.system(text)   
 		if keyword_module_opn in path_entry_name_content[prompt_id]:
-			text = "xdg-open "+path_entry_name_content[prompt_id][keyword_module_opn]
-			os.system(text)   
+			modules.www.launch(path_entry_name_content=path_entry_name_content, prompt_id=prompt_id, keyword_module_opn=keyword_module_opn)
+			#text = "xdg-open "+path_entry_name_content[prompt_id][keyword_module_opn]
+			#os.system(text)   
 		if keyword_module_cmd in path_entry_name_content[prompt_id] or keyword_module_cmd_c in path_entry_name_content[prompt_id]:
 			if  keyword_module_cmd_c in path_entry_name_content[prompt_id]:
 				text = path_entry_name_content[prompt_id][keyword_module_cmd_c]
