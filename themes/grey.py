@@ -12,7 +12,7 @@ completionMenu = {
 	'scrollbar.background': 'bg:#88aaaa',
 	'scrollbar.button': 'bg:#222222',
 	#'prompt': 'bg:#444444 white',
-	'arg-toolbar': 'bg:white #00aaaa',
+	#'arg-toolbar': 'bg:white #00aaaa',
 	#'prompt.arg.text': 'bg:#ffffff #00aaaa',
 }
 

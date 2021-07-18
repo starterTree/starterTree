@@ -23,7 +23,11 @@ from prompt_toolkit.formatted_text import HTML,merge_formatted_text
 import texttable as tt
 import themes.green
 import themes.grey
-import modules.url
+import modules.downloadWebContent
+import modules.openWWW
+import modules.ssh
+from shlex import quote 
+from prompt_toolkit.history import FileHistory
 #import colorama 
 
 listIcon=[]
@@ -59,9 +63,9 @@ keyword_github_content_code_prompt_token="github_api_content_prompt_token"
 keyword_kubeconfig_file="kubeconfig_file"
 keyword_module_cmd="cmd"
 keyword_module_cmd_c="cmdP"
-keyword_module_opn="www"
-keyword_module_ssh="ssh"
-modules=""
+www_module_keyword="www"
+ssh_module_keyword="ssh"
+#modules=""
 absolute_path_main_config_file=os.path.dirname(file_main)+"/"
 #style=Style.from_dict({Token.RPrompt: 'bg:#ff0066 #ffffff',})
 style=Style.from_dict({})
@@ -165,12 +169,12 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 					menu_completion[icon+key]={}
 					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
 				
-				if subKey == keyword_module_opn:
+				if subKey == www_module_keyword:
 					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
-				if subKey == keyword_module_ssh:
+				if subKey == ssh_module_keyword:
 					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
@@ -249,16 +253,18 @@ def mainPrompt(title) ->HTML:
 def getPromptText():
 	icon="search > ssh_cmd >"
 	if detectNerdFont : icon = "     "
-	session = PromptSession(icon+" ",style=style,key_bindings=bindings)
-	prompt= session.prompt(pre_run=session.default_buffer.start_completion,default="",rprompt=get_rprompt)
-	prompt= prompt.replace('"','')
+	history = FileHistory(tmpDir+".history_ssh_cmd")
+	session = PromptSession("\n"+icon+" ",style=style,key_bindings=bindings,history=history)
+	#prompt= session.prompt(pre_run=session.default_buffer.start_completion,default="",rprompt=get_rprompt)
+	prompt= session.prompt(default="",rprompt=get_rprompt)
+	#prompt= prompt.replace('"','')
 	prompt=prompt.encode('ascii',errors='ignore').decode()
 	return prompt
 
 def ssh_cmd(result):
 	promptT= getPromptText()
 	for r in result :
-		if keyword_module_ssh in path_entry_name_content[r]:
+		if ssh_module_keyword in path_entry_name_content[r]:
 			tab = tt.Texttable(max_width=os.get_terminal_size().columns)
 			headings = ['N°','Path','Name','Type','Tags']
 			tab.set_chars(["_","","","_"])
@@ -267,7 +273,7 @@ def ssh_cmd(result):
 			tab.add_row([path_entry_name_content[r]["tmp_id"],path_entry_name_content[r]["path"],path_entry_name_content[r]["name"],path_entry_name_content[r]["type"],path_entry_name_content[r]["tags"]])
 			print()
 			print(tab.draw())
-			os.system("ssh "+path_entry_name_content[r][keyword_module_ssh]+ " "+promptT)
+			os.system("ssh "+path_entry_name_content[r][ssh_module_keyword]+ " "+quote(promptT))
 	ssh_cmd(result)	
 def getTag(result):
 	myComplete={}
@@ -287,6 +293,7 @@ def getTag(result):
 	icon="search > tag >"
 	if detectNerdFont : icon = "   "
 	session = PromptSession(icon+" ",style=style,key_bindings=bindings)
+	#prompt= session.prompt(pre_run=session.default_buffer.start_completion,default="",completer=completer)
 	prompt= session.prompt(pre_run=session.default_buffer.start_completion,default="",completer=completer)
 
 
@@ -316,8 +323,13 @@ def getPromptSearch(default_promptSearch):
    
 	icon=" search >"
 	if detectNerdFont: icon=" "
-	session = PromptSession(icon+" ",completer=completer,style=style,key_bindings=bindings)
-	prompt= session.prompt(pre_run=session.default_buffer.start_completion,default=default_promptSearch,rprompt=get_rprompt).replace('"','')
+	history = FileHistory(tmpDir+".history_search")
+	session = PromptSession(icon+" ",completer=completer,style=style,key_bindings=bindings,history=history)
+	#prompt= session.prompt(pre_run=session.default_buffer.start_completion,default=default_promptSearch,rprompt=get_rprompt).replace('"','')
+	try:
+		prompt= session.prompt(default=default_promptSearch,rprompt=get_rprompt).replace('"','')
+	except:
+		exit()
 	prompt=prompt.encode('ascii',errors='ignore').decode()
 	#print(prompt.split(" "))
 	result=[]
@@ -355,10 +367,15 @@ def getPromptSearch(default_promptSearch):
 							if prec == precCat:
 								queryT=queryT+"and"+" "
 							if i.split("=")[0] == "tag" :
-								if 'tags' in path_entry_name_content[r] and (i.split("=")[1].lower() in path_entry_name_content[r]["tags"] or i.split("=")[1].upper() in path_entry_name_content[r]["tags"]):
-									queryT=queryT+str(True)+" "
-								else: 	
-									queryT=queryT+str(False)+" "
+								#print(i.split("=")[1].split(","))
+								nextOperator=""
+								for t in i.split("=")[1].split(","):
+									if t is not "":
+										if 'tags' in path_entry_name_content[r] and (t.lower() in path_entry_name_content[r]["tags"] or t.upper() in path_entry_name_content[r]["tags"]):
+											queryT=queryT+nextOperator+str(True)+" "
+										else: 	
+											queryT=queryT+nextOperator+str(False)+" "
+										nextOperator="and "
 							if i.split("=")[0] == "name" :
 								queryT=queryT+str(bool(re.search(i.split("=")[1],path_entry_name_content[r]["name"],re.IGNORECASE)))+" "
 							if i.split("=")[0] == "path" :
@@ -385,19 +402,19 @@ def getPromptSearch(default_promptSearch):
 						#tab.add_row([colorama.Style.RESET_ALL+str(n),path_entry_name_content[r]["name"],str(path_entry_name_content[r]["tags"])])
 			
 		print(tab.draw())
-		if "tag" in prompt.split(" "):
-			try:
-				getTag(result)
-			except:
-				pass
+		#if "tag" in prompt.split(" "):
+		#	try:
+		#		getTag(result)
+		#	except:
+		#		pass
 		if "ssh_cmd" in prompt.split(" "):
 			print("ssh_cmd")
 			try:
 				ssh_cmd(result)
 				#promptT= getPromptText()
 				#for r in result:
-				#	if keyword_module_ssh in path_entry_name_content[r]:
-				#		os.system("ssh "+path_entry_name_content[r][keyword_module_ssh]+ " "+promptT)
+				#	if ssh_module_keyword in path_entry_name_content[r]:
+				#		os.system("ssh "+path_entry_name_content[r][ssh_module_keyword]+ " "+promptT)
 				
 			except Exception as e:  
 				print(str(e))
@@ -407,7 +424,7 @@ def getPromptSearch(default_promptSearch):
 
 
 		getPromptSearch(prompt)
-						#os.system("ssh -t"+path_entry_name_content[r][keyword_module_ssh]+ "blabla")
+						#os.system("ssh -t"+path_entry_name_content[r][ssh_module_keyword]+ "blabla")
 
 #								for r in path_entry_name_content:
 #							if len(path_entry_name_content[r]) > 0:
@@ -425,9 +442,11 @@ def getPromptSearch(default_promptSearch):
 		pass # tout afficher/prendre
 
 def main():
-	session = PromptSession(mainPrompt(promptTitle), completer=completer, mouse_support=False,style=style, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
+	history = FileHistory(tmpDir+".history_main")
+	session = PromptSession(mainPrompt(promptTitle), completer=completer, mouse_support=False,style=style, history=history, complete_style=CompleteStyle.MULTI_COLUMN,key_bindings=bindings)
 	try:
-		prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,rprompt=get_rprompt,default="").replace(" ","")
+		#prompt_id=session.prompt(pre_run=session.default_buffer.start_completion,rprompt=get_rprompt,default="").replace(" ","")
+		prompt_id=session.prompt(placeholder="press space to use completion or up to use history",rprompt=get_rprompt,default="").replace(" ","")
 		historyName=prompt_id
 		prompt_id=prompt_id.encode('ascii',errors='ignore').decode()
 		for i in prompt_id:
@@ -438,10 +457,13 @@ def main():
 		#print("error")
 		exit()
 	if prompt_id == "--search":
-		try:
-			getPromptSearch("")
-		except:
-			main()
+		#try:
+		getPromptSearch("")
+			
+		#except Exception as e:  
+		#	print(str(e))
+		main()
+
 		exit()
 	if prompt_id == "--version":
 		print("version is git rev-parse HEAD hash")
@@ -477,7 +499,7 @@ def main():
 		if "encryptable-kube" in path_entry_name_content_cmd[prompt_id]:
 			os.system("cat "+os.path.version is versionanduser(path_entry_name_content_cmd[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
 		if keyword_web_content in path_entry_name_content_cmd[prompt_id]:
-			modules.url.launch(path_entry_name_content=path_entry_name_content,prompt_id=prompt_id,keyword_web_content=keyword_web_content,tmpDir=tmpDir)
+			modules.downloadWebContent.launch(path_entry_name_content=path_entry_name_content,prompt_id=prompt_id,keyword_web_content=keyword_web_content,tmpDir=tmpDir)
 			#downloadFromUrl(path_entry_name_content[prompt_id.replace("--pull","")][keyword_web_content])
 		if keyword_gitlab_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
 			downloadFromGitLabWithPromptToken(path_entry_name_content[prompt_id.replace("--pull","")][keyword_gitlab_content_code_prompt_token])
@@ -489,13 +511,13 @@ def main():
 		text=prompt_id 
 		if keyword_kubeconfig_file in path_entry_name_content[prompt_id]:
 			startKubectl(path_entry_name_content[prompt_id][keyword_kubeconfig_file])
-		if keyword_module_ssh in path_entry_name_content[prompt_id]:
-			text = "ssh "+path_entry_name_content[prompt_id][keyword_module_ssh]
-			os.system(text)   
-		if keyword_module_opn in path_entry_name_content[prompt_id]:
-			modules.www.launch(path_entry_name_content=path_entry_name_content, prompt_id=prompt_id, keyword_module_opn=keyword_module_opn)
-			#text = "xdg-open "+path_entry_name_content[prompt_id][keyword_module_opn]
-			#os.system(text)   
+
+		if ssh_module_keyword in path_entry_name_content[prompt_id]:
+			modules.ssh.launch(pattern= path_entry_name_content[prompt_id][ssh_module_keyword] )
+
+		if www_module_keyword in path_entry_name_content[prompt_id]:
+			modules.openWWW.launch(address= path_entry_name_content[prompt_id][www_module_keyword] )
+
 		if keyword_module_cmd in path_entry_name_content[prompt_id] or keyword_module_cmd_c in path_entry_name_content[prompt_id]:
 			if  keyword_module_cmd_c in path_entry_name_content[prompt_id]:
 				text = path_entry_name_content[prompt_id][keyword_module_cmd_c]
