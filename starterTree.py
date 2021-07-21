@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # TODO voir rempacer icon par entree ? ou/et sinon incruster icone > (ou toutes icons ?) dans le parseur
-
 from sys import exit
-import texttable
+#import texttable
 import os
 import sys
 import time
@@ -402,26 +401,13 @@ def getPromptSearch(default_promptSearch):
 						#tab.add_row([colorama.Style.RESET_ALL+str(n),path_entry_name_content[r]["name"],str(path_entry_name_content[r]["tags"])])
 			
 		print(tab.draw())
-		#if "tag" in prompt.split(" "):
-		#	try:
-		#		getTag(result)
-		#	except:
-		#		pass
 		if "ssh_cmd" in prompt.split(" "):
 			print("ssh_cmd")
 			try:
 				ssh_cmd(result)
-				#promptT= getPromptText()
-				#for r in result:
-				#	if ssh_module_keyword in path_entry_name_content[r]:
-				#		os.system("ssh "+path_entry_name_content[r][ssh_module_keyword]+ " "+promptT)
 				
-			except Exception as e:  
-				print(str(e))
-
-					#print("execute")
-					#getPromptText()
-
+			except AttributeError:  
+				pass
 
 		getPromptSearch(prompt)
 						#os.system("ssh -t"+path_entry_name_content[r][ssh_module_keyword]+ "blabla")
