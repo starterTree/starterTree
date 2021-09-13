@@ -3,7 +3,6 @@
 
 # TODO voir rempacer icon par entree ? ou/et sinon incruster icone > (ou toutes icons ?) dans le parseur
 from sys import exit
-#import texttable
 import os
 import sys
 import time
@@ -19,14 +18,18 @@ from prompt_toolkit.styles import Style
 from prompt_toolkit.application import run_in_terminal,get_app_or_none
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.formatted_text import HTML,merge_formatted_text
-import texttable as tt
 import themes.green
 import themes.grey
 import modules.downloadWebContent
 import modules.openWWW
 import modules.ssh
+#from modules.output.textable import Tableau as Tableau
+from modules.output.rich import Tableau as Tableau
 from shlex import quote 
 from prompt_toolkit.history import FileHistory
+from rich.console import Console
+#import base64
+#import paramiko
 #import colorama 
 
 listIcon=[]
@@ -34,7 +37,6 @@ detectNerdFont= False
 if not os.system("fc-list | grep -i nerd >/dev/null "):
     detectNerdFont= True
     listIcon=['','','','','','','','']
-
 
 #from module.test import add
 
@@ -113,34 +115,53 @@ def startKubectl(path_file):
 	if file_extension == ".asc":
 		os.remove(os.path.version is versionanduser(path_file))
 		os.system("echo RELOADAGENT | gpg-connect-agent")
+
+def tags(key):
+	#for i in path_entry_name_content["path_"+path_entry_name+keya]["tags"]:
+	#	print("hey",i.split(key))
+	#	if len(i.split(key)) == 2:
+	#		return i.split(key)[1]
+	return "fuckyek"
+
+
+
 def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 	for key in source_dict:
 		keya=key.encode('ascii',errors='ignore').decode()
-
+		#if "path_"+path_entry_name+keya not in path_entry_name_content:
 		path_entry_name_content["path_"+path_entry_name+keya]={}
 		#path_entry_name_content["path_"+path_entry_name+key]=source_dict[key]
 
 		for subKey in source_dict[key]:
 			icon=""
+			path_entry_name_content["path_"+path_entry_name+keya]["tags"]={}
 			if not isinstance(source_dict[key][subKey],dict):
+				self={}
+				self["tags"]=[]
 				path_entry_name_content["path_"+path_entry_name+keya]["path"]=path_entry_name_path+"/"
 				path_entry_name_content["path_"+path_entry_name+keya]["name"]=keya
-				path_entry_name_content["path_"+path_entry_name+keya]["tags"]={}
 				path_entry_name_content_cmd["path_"+path_entry_name+keya+"--show"]={}
 				path_entry_name_content_cmd["path_"+path_entry_name+keya+"--show"]["show"]={}
-				if subKey == "starterTree_disableIcon":
-					global detectNerdFont
-					detectNerdFont= False
-				if subKey == "starterTree_title":
-					global promptTitle
-					promptTitle=source_dict[key][subKey]
-				if subKey == "starterTree_theme":
-					global style
-					if source_dict[key][subKey] == "green": style = Style.from_dict(themes.green.completionMenu)
-					if source_dict[key][subKey] == "grey":  style = Style.from_dict(themes.grey.completionMenu)
-				
+				#CONFIGURE SETTINGS
+				if subKey in ["starterTree_disableIcon","starterTree_title","starterTree_theme"]: 
+					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key]
+					path_entry_name_content["path_"+path_entry_name+keya]["type"]="settings"
+					if subKey == "starterTree_disableIcon":
+						global detectNerdFont
+						detectNerdFont= False
+					if subKey == "starterTree_title":
+						global promptTitle
+						promptTitle=source_dict[key][subKey]
+					if subKey == "starterTree_theme":
+						global style
+						if source_dict[key][subKey] == "green": style = Style.from_dict(themes.green.completionMenu)
+						if source_dict[key][subKey] == "grey":  style = Style.from_dict(themes.grey.completionMenu)
+					
 				if subKey == "tags":
+					self["tags"]=[]
+					path_entry_name_content["path_"+path_entry_name+keya]["tags"]={}
 					path_entry_name_content["path_"+path_entry_name+keya]["tags"]=source_dict[key][subKey]
+					self["tags"]=source_dict[key][subKey]
 				if subKey == keyword_kubeconfig_file:
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
@@ -170,21 +191,31 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 				
 				if subKey == www_module_keyword:
 					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
+					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya]["description"]=source_dict[key][subKey]
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == ssh_module_keyword:
+
 					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
+					if len(source_dict[key][subKey].split("{{")) == 2 and len(source_dict[key][subKey].split("}}")) == 2:
+						print(source_dict[key][subKey].split("{{")[1].split("}}")[0])
+						path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey].replace("{{"+source_dict[key][subKey].split("{{")[1].split("}}")[0]+"}}" ,eval(source_dict[key][subKey].split("{{")[1].split("}}")[0]))
+
+					path_entry_name_content["path_"+path_entry_name+keya]["content"]=path_entry_name_content["path_"+path_entry_name+keya][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_cmd:
 					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
+					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key][subKey]
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_cmd_c:
 					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
+					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key][subKey]
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]=None
@@ -200,13 +231,17 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 				my_fun(source_dict[key], menu_completion[icon+key+""] ,path_entry_name+keya,path_entry_name_path+"/"+keya)
 				#del path_entry_name_content["path_"+path_entry_name+keya]
 				
-menu_completion={}
+menu_completion={'--search': None}
 my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"","")
 
 completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
 
 bindings = KeyBindings()
 
+def getIcon(icon,defaultIcon=""):
+    if detectNerdFont:
+        return icon
+    return defaultIcon
 
 @bindings.add('c-c')
 def _(event):
@@ -216,7 +251,8 @@ def _(event):
 
 #print(type(text))
 def get_toolbar():
-	return "Bottom toolbar: time=%r" % time.time()
+	#return "Bottom toolbar: time=%r" % time.time()
+	return ANSI(str_output+"a")
 
 
 def get_rprompt():
@@ -230,10 +266,14 @@ def get_rprompt():
 				#text=text.replace(i,"")
 	text='path_'+text
 	if text in path_entry_name_content:
-		result=path_entry_name_content[text]
+		result=''
+		if "ssh" in path_entry_name_content[text]:
+			result=path_entry_name_content[text][ssh_module_keyword]
+		if "www" in path_entry_name_content[text]:
+			result=path_entry_name_content[text][www_module_keyword]
 		#return HTML('<aaa fg="white" bg="#008888">'+str(result)+'</aaa>')
 		#return merge_formatted_text([HTML('<aaa style="bold" fg="white" bg="#444444">'+"'"+str(result)+"'"+'</aaa>'),"dd"])
-		return str(result)
+		return str(result+' ')
 		#return [(Token, ' '),(Token.RPrompt, str(result)),]
 	else:
 		return('')
@@ -244,7 +284,7 @@ def mainPrompt(title) ->HTML:
 	#version=""
 	version="vversion is version"
 	#str(datetime.datetime.now())
-	if detectNerdFont: icon=" "
+	if detectNerdFont: icon=" " #icon=getIcon(""," >")
 	caseVersion=HTML('<aaa style="" fg="red" bg="#444444"> '+str(version)+'</aaa>')
 	promptUser=HTML('<aaa style="" fg="white" bg="#444444"> '+str(title+icon)+' </aaa>')
 	return merge_formatted_text([caseVersion,promptUser," "])
@@ -264,14 +304,11 @@ def ssh_cmd(result):
 	promptT= getPromptText()
 	for r in result :
 		if ssh_module_keyword in path_entry_name_content[r]:
-			tab = tt.Texttable(max_width=os.get_terminal_size().columns)
-			headings = ['N°','Path','Name','Type','Tags']
-			tab.set_chars(["_","","","_"])
-			tab.header(headings)
-			#if 'type' not in path_entry_name_content[r]: path_entry_name_content[r]["type"]="none"
-			tab.add_row([path_entry_name_content[r]["tmp_id"],path_entry_name_content[r]["path"],path_entry_name_content[r]["name"],path_entry_name_content[r]["type"],path_entry_name_content[r]["tags"]])
+			tableau=Tableau(['N°','Path','Name','Type','Tags'],detectNerdFont)	
+			setNoneForValue(path_entry_name_content[r],["type","tags"])
+			tableau.add_row([path_entry_name_content[r]["tmp_id"],path_entry_name_content[r]["path"],path_entry_name_content[r]["name"],path_entry_name_content[r]["type"],path_entry_name_content[r]["tags"]])
 			print()
-			print(tab.draw())
+			#tableau.draw(icon+" "+prompt)
 			os.system("ssh "+path_entry_name_content[r][ssh_module_keyword]+ " "+quote(promptT))
 	ssh_cmd(result)	
 def getTag(result):
@@ -297,6 +334,23 @@ def getTag(result):
 
 
 
+def setNoneForValue(tab,values):
+	for i in values:
+		if i not in tab: tab[i]="none"
+	
+
+def fill_tableau(n,tableau_keys,path_entry_name_content_entry,tableau):
+	tableau_lines=[]
+	tableau_lines.append(n)
+	for i in tableau_keys:
+		if i in path_entry_name_content_entry:
+			if ( i == "content" or i =="description") and "type" in path_entry_name_content_entry and path_entry_name_content_entry["type"] == "www":
+				tableau_lines.append("[link="+path_entry_name_content_entry[i]+"]"+path_entry_name_content_entry[i]+"[/link]")
+			else:
+				tableau_lines.append(path_entry_name_content_entry[i])
+		else:
+			tableau_lines.append("none")
+	tableau.add_row(row=tableau_lines)
 
 	
 def getPromptSearch(default_promptSearch):
@@ -306,16 +360,21 @@ def getPromptSearch(default_promptSearch):
 		    "tag=",
 		    "type=",
 		    "path=",
-		    "tag",
+		    "display=",
+		    "hide=",
 		    "ssh_cmd",
-		    "exe",
-		    "action"
+		    #"tag",
+		    #"exe",
+		    #"action"
 		],
 		meta_dict={
-		    "name=": " support regex case insitive",
-		    "tag=": " exact tag,case insitive",
-		    "ape": "Apes (Hominoidea) are a branch of Old World tailless anthropoid catarrhine primates ",
-		    "bat": "Bats are mammals of the order Chiroptera",
+		    "name=": "support regex case insitive",
+		    #"name=": " support regex case insitive",
+		    "tag=": "exact tag,case insitive",
+		    "ssh_cmd" :"execute an command on selected servers, if prompt is empty, it's start session interactively",
+		    #"tag=": " exact tag,case insitive",
+		    "display=": "display column",
+		    "hide=": "hide column",
 		},
 		ignore_case=True,
 	)
@@ -330,14 +389,28 @@ def getPromptSearch(default_promptSearch):
 	except:
 		exit()
 	prompt=prompt.encode('ascii',errors='ignore').decode()
+	prompt_and_default="display=type,tags,description "+prompt
 	#print(prompt.split(" "))
 	result=[]
-	tab = tt.Texttable(max_width=os.get_terminal_size().columns)
-	headings = ['N°','Path','Name','Type','Tags']
-	tab.header(headings)
-	tab.set_chars(["_","","","_"])
-	tab.set_chars(["_","","","_"])
 	#tab.set_cols_align(["l", "c", "c"])
+	tableau_keys={}
+	for i in prompt_and_default.split(" "):
+		if i.split("=")[0] in "display": 
+			if len(i.split("=")) == 2:
+				for t in i.split("=")[1].split(","):
+					if t is not "":
+						tableau_keys[t]=""
+		if i.split("=")[0] in "hide": 
+			if len(i.split("=")) == 2:
+				for t in i.split("=")[1].split(","):
+					if t is not "":
+						tableau_keys.pop(t,"")
+
+	headings=[]
+	headings.append("N°")
+	for i in tableau_keys:
+		headings.append(i)
+	tableau=Tableau(headings,detectNerdFont)
 	if not prompt.replace(" ","") == "" :
 		query=""
 
@@ -350,13 +423,16 @@ def getPromptSearch(default_promptSearch):
 		#				pattern=i.split("=")[1]
 		#		query=query+i+" "
 		n=0
+
+		#tableau=Tableau(['N°','Path','Name','Type','Tags','Content'])
+
 		for r in path_entry_name_content:
 			queryT="" 
 			if len(path_entry_name_content[r]) > 0:
 				#print(prompt.split(" "))
 				prec=""
 				precCat=" "
-				for i in prompt.split(" "):
+				for i in prompt_and_default.split(" "):
 					if i == "not":
 						if prec == precCat:
 							queryT=queryT+"and"+" "
@@ -368,6 +444,8 @@ def getPromptSearch(default_promptSearch):
 							if i.split("=")[0] == "tag" :
 								#print(i.split("=")[1].split(","))
 								nextOperator=""
+								if not i.split("=")[1].split(",") == "":
+									queryT=queryT+"("+" "
 								for t in i.split("=")[1].split(","):
 									if t is not "":
 										if 'tags' in path_entry_name_content[r] and (t.lower() in path_entry_name_content[r]["tags"] or t.upper() in path_entry_name_content[r]["tags"]):
@@ -375,6 +453,11 @@ def getPromptSearch(default_promptSearch):
 										else: 	
 											queryT=queryT+nextOperator+str(False)+" "
 										nextOperator="and "
+										if prec== "not":
+											nextOperator="or "
+								if not i.split("=")[1].split(",") == "":
+									queryT=queryT+")"+" "
+
 							if i.split("=")[0] == "name" :
 								queryT=queryT+str(bool(re.search(i.split("=")[1],path_entry_name_content[r]["name"],re.IGNORECASE)))+" "
 							if i.split("=")[0] == "path" :
@@ -388,19 +471,18 @@ def getPromptSearch(default_promptSearch):
 						else:
 							pass
 							#if getPromptSearchCat()
-					if i in "and,or,not":
+					if i in "and,or,not,(,)":
 						queryT=queryT+i+" "
-					if i not in '""," "': prec=i
+					if i.split("=")[0] in ["tag","name","type","path","and","not","or","(",")"]: prec=i
+					#if i.split("=")[0] not in '""," "': prec=i
 				#print(queryT)
 				if queryT.replace(" ","") == "" or eval(str(queryT)) :
 					n=n+1
 					result.append(r)
 					path_entry_name_content[r]["tmp_id"]=n
-					if 'type' not in path_entry_name_content[r]: path_entry_name_content[r]["type"]="none"
-					tab.add_row([n,path_entry_name_content[r]["path"],path_entry_name_content[r]["name"],path_entry_name_content[r]["type"],path_entry_name_content[r]["tags"]])
-						#tab.add_row([colorama.Style.RESET_ALL+str(n),path_entry_name_content[r]["name"],str(path_entry_name_content[r]["tags"])])
+					fill_tableau(str(n),tableau_keys,path_entry_name_content[r],tableau)
 			
-		print(tab.draw())
+		tableau.draw(icon+" "+prompt)
 		if "ssh_cmd" in prompt.split(" "):
 			print("ssh_cmd")
 			try:
@@ -420,10 +502,11 @@ def getPromptSearch(default_promptSearch):
 		for r in path_entry_name_content:
 			if len(path_entry_name_content[r]) > 0:
 				n=n+1
-				if 'type' not in path_entry_name_content[r]: path_entry_name_content[r]["type"]="none"
-				tab.add_row([n,path_entry_name_content[r]["path"],path_entry_name_content[r]["name"],path_entry_name_content[r]["type"],path_entry_name_content[r]["tags"]])
+				#setNoneForValue(path_entry_name_content[r],["path","name","type","tags"])
+				fill_tableau(str(n),tableau_keys,path_entry_name_content[r],tableau)
+				#tableau.add_row([str(n),path_entry_name_content[r]["path"],path_entry_name_content[r]["name"],path_entry_name_content[r]["type"],path_entry_name_content[r]["tags"]])
 		#getPromptSearch("name=")
-		print(tab.draw())
+		tableau.draw(icon+" "+prompt)
 		getPromptSearch(prompt)
 		pass # tout afficher/prendre
 
@@ -514,15 +597,46 @@ def main():
 				exit()
 			os.system(text)
 		
-		with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
-			myfile.write(text+' # '+historyName+'\n')
+		#with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
+		#	myfile.write(text+' # '+historyName+'\n')
 
 
 	else:
 		print("ERR: entry not found")
 		main()
 
+from rich.panel import Panel
+from rich.table import Table
+from rich import box
+
+from prompt_toolkit import print_formatted_text, ANSI
+console=Console()
+
+with console.capture() as capture:
+    grid =Table(expand=False, box=box.SQUARE,show_header=False,show_edge=False)
+    text="""   ____ __ 
+  / __// /_ [#444444 on blue]v0.12[/#444444 on blue]
+ _\ \ / __/ [#444444 on green]githubThoms10[/#444444 on green]
+/___/ \__/"""
+    text2="""███████ ████████ 
+██         ██    
+███████    ██    
+     ██    ██    
+███████    ██"""   
+    #grid.add_column(style="red")
+    #grid.add_column(style="green on purple")
+    grid.add_row("[bold #444444 on red]"+text+"[/bold #444444 on red]", "[bold magenta]COMPLETED [green]:heavy_check_mark:")
+    console.print(grid)
+str_output = capture.get()
+
+
+
+
+
 if __name__ == "__main__":
+    console=Console()
+    #console.rule(style="red")
+    #console.print(Panel("dd"))
     main()
 
 exit()

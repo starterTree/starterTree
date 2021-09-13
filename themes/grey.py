@@ -11,6 +11,7 @@ completionMenu = {
 	'completion-menu' : 'bg:#444444',
 	'scrollbar.background': 'bg:#88aaaa',
 	'scrollbar.button': 'bg:#222222',
+	'bottom-toolbar' : '#444444',
 	#'prompt': 'bg:#444444 white',
 	#'arg-toolbar': 'bg:white #00aaaa',
 	#'prompt.arg.text': 'bg:#ffffff #00aaaa',

@@ -137,7 +137,7 @@ to enable icons, you must install nerd fonts [nerdFonts](https://www.nerdfonts.c
 #### UPDATE 
 
 since version 0.7 you can update with:
-```
+``` shell
 #update to last versiob
 t > --update
 #update to precise version

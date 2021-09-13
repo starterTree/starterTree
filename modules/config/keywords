@@ -1,0 +1,10 @@
+
+file_content_relative="file_content_relative"
+web_content="web_content"
+gitlab_content_code_prompt_token="gitlab_api_content_prompt_token"
+github_content_code_prompt_token="github_api_content_prompt_token"
+kubeconfig_file="kubeconfig_file"
+module_cmd="cmd"
+module_cmd_c="cmdP"
+www_module_keyword="www"
+ssh_module_keyword="ssh"
