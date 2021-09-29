@@ -107,13 +107,13 @@ def startKubectl(path_file):
 		os.system("gpg --batch --yes --out "+path_file+".decrypt"+" -d "+path_file )
 		path_file=path_file+".decrypt"
 	#kubectl config current-context
-	os.putenv("KUBECONFIG",os.path.version is versionanduser(path_file))
+	os.putenv("KUBECONFIG",os.path.expanduser(path_file))
 	icon=""
 	if detectNerdFont: icon=" "
 	os.putenv("ST","Kind-Kind "+icon)
 	os.system("bash")
 	if file_extension == ".asc":
-		os.remove(os.path.version is versionanduser(path_file))
+		os.remove(os.path.expanduser(path_file))
 		os.system("echo RELOADAGENT | gpg-connect-agent")
 
 def tags(key):
@@ -282,7 +282,7 @@ import datetime
 def mainPrompt(title) ->HTML:
 	icon=" >"
 	#version=""
-	version="vversion is version"
+	version="version is version"
 	#str(datetime.datetime.now())
 	if detectNerdFont: icon=" " #icon=getIcon(""," >")
 	caseVersion=HTML('<aaa style="" fg="red" bg="#444444"> '+str(version)+'</aaa>')
@@ -566,7 +566,7 @@ def main():
 		if "encryptable" in path_entry_name_content_cmd[prompt_id]:
 			os.system("cat "+tmpDir+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable"])+" | gpg -a --cipher-algo AES256 -c")			
 		if "encryptable-kube" in path_entry_name_content_cmd[prompt_id]:
-			os.system("cat "+os.path.version is versionanduser(path_entry_name_content_cmd[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
+			os.system("cat "+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
 		if keyword_web_content in path_entry_name_content_cmd[prompt_id]:
 			modules.downloadWebContent.launch(path_entry_name_content=path_entry_name_content,prompt_id=prompt_id,keyword_web_content=keyword_web_content,tmpDir=tmpDir)
 			#downloadFromUrl(path_entry_name_content[prompt_id.replace("--pull","")][keyword_web_content])
