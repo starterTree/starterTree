@@ -231,7 +231,7 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 				my_fun(source_dict[key], menu_completion[icon+key+""] ,path_entry_name+keya,path_entry_name_path+"/"+keya)
 				#del path_entry_name_content["path_"+path_entry_name+keya]
 				
-menu_completion={'--search': None}
+menu_completion={'--search': None, '--update': None}
 my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"","")
 
 completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
