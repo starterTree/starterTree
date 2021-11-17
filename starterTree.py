@@ -571,9 +571,9 @@ def main():
 			modules.downloadWebContent.launch(path_entry_name_content=path_entry_name_content,prompt_id=prompt_id,keyword_web_content=keyword_web_content,tmpDir=tmpDir)
 			#downloadFromUrl(path_entry_name_content[prompt_id.replace("--pull","")][keyword_web_content])
 		if keyword_gitlab_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
-			downloadFromGitLabWithPromptToken(path_entry_name_content[prompt_id.replace("--pull","")][keyword_gitlab_content_code_prompt_token])
+			downloadFromGitLabWithPromptToken(path_entry_name_content_cmd[prompt_id.replace("","")][keyword_gitlab_content_code_prompt_token])
 		if keyword_github_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
-			downloadFromGitHubWithPromptToken(path_entry_name_content[prompt_id.replace("--pull","")][keyword_github_content_code_prompt_token])
+			downloadFromGitHubWithPromptToken(path_entry_name_content_cmd[prompt_id.replace("","")][keyword_github_content_code_prompt_token])
 		exit()
 
 	if  prompt_id in path_entry_name_content:
