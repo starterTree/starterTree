@@ -28,6 +28,7 @@ from modules.output.rich import Tableau as Tableau
 from shlex import quote 
 from prompt_toolkit.history import FileHistory
 from rich.console import Console
+from jinja2 import Template
 #import base64
 #import paramiko
 #import colorama 
@@ -173,7 +174,8 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 					if detectNerdFont: icon=""
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]={}
-					my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
+					#my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
+					my_fun(jinjaFile2yaml(absolute_path_main_config_file+source_dict[key][subKey]),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
 
 				if subKey in [keyword_gitlab_content_code_prompt_token, keyword_github_content_code_prompt_token, keyword_web_content] :	
 					if detectNerdFont: icon=""
@@ -187,8 +189,9 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 						if subKey == keyword_github_content_code_prompt_token: downloadFromGitHubWithPromptToken(source_dict[key][subKey])
 						if subKey == keyword_web_content: downloadFromUrl(source_dict[key][subKey])
 					menu_completion[icon+key]={}
-					my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
-				
+					#my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
+					#print(tmpDir+os.path.basename(source_dict[key][subKey]))
+					my_fun(jinjaFile2yaml(tmpDir+os.path.basename(source_dict[key][subKey])),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)	
 				if subKey == www_module_keyword:
 					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
 					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key][subKey]
@@ -232,7 +235,16 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 				#del path_entry_name_content["path_"+path_entry_name+keya]
 				
 menu_completion={'--search': None, '--update': None}
-my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"","")
+
+def jinjaFile2yaml(jinjaFile):
+    with open(jinjaFile) as file_:
+        template = Template(file_.read())
+    #print(template.render(name='John'))
+    return yaml.load(template.render(),Loader=yaml.SafeLoader)
+
+#my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
+#my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"","")
+my_fun(jinjaFile2yaml(file_main),menu_completion,"","")
 
 completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
 
