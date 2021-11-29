@@ -17,7 +17,7 @@ style=""
 
 class Tableau:
     def __init__(self, headings,detectNerdFont):
-        self.tab = Table(row_styles = ["white on #666666", "white on #444444"],show_lines=False,show_header=True,show_footer=True,box=box.SIMPLE_HEAD,border_style="",show_edge=False, footer_style="bold green",header_style="bold green on #444444",expand=True,collapse_padding=True)
+        self.tab = Table(row_styles = ["white on #4d4d4d", "white on #444444"],show_lines=False,show_header=True,show_footer=True,box=box.SIMPLE_HEAD,border_style="",show_edge=False, footer_style="bold green",header_style="bold green on #444444",expand=True,collapse_padding=True)
         self.tab.border_style = "bold #444444"
         self.detectNerdFont=detectNerdFont
         #self.tab.border_style = "green"

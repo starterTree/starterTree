@@ -193,22 +193,12 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 					#print(tmpDir+os.path.basename(source_dict[key][subKey]))
 					my_fun(jinjaFile2yaml(tmpDir+os.path.basename(source_dict[key][subKey])),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)	
 				if subKey == www_module_keyword:
-					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
-					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key][subKey]
-					path_entry_name_content["path_"+path_entry_name+keya]["description"]=source_dict[key][subKey]
-					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
+					modules.openWWW.register(source_dict[key],path_entry_name_content["path_"+path_entry_name+keya])
+					if detectNerdFont: icon=modules.openWWW.getIcon()
 					menu_completion[icon+key]=None
 				if subKey == ssh_module_keyword:
-
-					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
-					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
-					if len(source_dict[key][subKey].split("{{")) == 2 and len(source_dict[key][subKey].split("}}")) == 2:
-						print(source_dict[key][subKey].split("{{")[1].split("}}")[0])
-						path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey].replace("{{"+source_dict[key][subKey].split("{{")[1].split("}}")[0]+"}}" ,eval(source_dict[key][subKey].split("{{")[1].split("}}")[0]))
-
-					path_entry_name_content["path_"+path_entry_name+keya]["content"]=path_entry_name_content["path_"+path_entry_name+keya][subKey]
+					modules.ssh.register(source_dict[key],path_entry_name_content["path_"+path_entry_name+keya])
+					if detectNerdFont: icon=modules.ssh.getIcon()
 					menu_completion[icon+key]=None
 				if subKey == keyword_module_cmd:
 					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
@@ -594,7 +584,7 @@ def main():
 			startKubectl(path_entry_name_content[prompt_id][keyword_kubeconfig_file])
 
 		if ssh_module_keyword in path_entry_name_content[prompt_id]:
-			modules.ssh.launch(pattern= path_entry_name_content[prompt_id][ssh_module_keyword] )
+			modules.ssh.launch(ssh_object= path_entry_name_content[prompt_id] )
 
 		if www_module_keyword in path_entry_name_content[prompt_id]:
 			modules.openWWW.launch(address= path_entry_name_content[prompt_id][www_module_keyword] )
