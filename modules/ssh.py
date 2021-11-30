@@ -7,6 +7,8 @@ from rich.panel import Panel
 
 
 demoDataYaml="""
+set:
+  starterTree_theme: grey
 serversDemoData:
   pet:
     demoData_ssh_server1:
