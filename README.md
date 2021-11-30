@@ -82,24 +82,6 @@ or run starterTree via bind:
 `bind -x '"\C-p":t'`
 
 
-
-
-<!--
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-* an improved interface with a space to display the description of an entry is planned
-* split code in module 
-* replace external bash command like curl, fc-list, grep  by python code
-* factoring code
-<!--
-See the [open issues](https://github.com/github_username/repo_name/issues) for a list of proposed features (and known issues).
-
-
-
 <!-- CONTRIBUTING -->
 ## Contributing
 
