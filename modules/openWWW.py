@@ -2,6 +2,18 @@
 # -*- coding: utf-8 -*-
 import os
 
+demoDataYaml="""
+linksDemoData:
+  mySites:
+    google:
+      www: https://google.fr
+    gitlab:
+      www: gitlab.fr
+"""
+    
+def getDemoData():
+    return demoDataYaml
+
 
 def register(config_dict,st_dict):
     st_dict["type"]="www"

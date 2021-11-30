@@ -2,6 +2,18 @@
 # -*- coding: utf-8 -*-
 # Ce module permet 
 
+demoDataYaml="""
+{}
+"""
+
+demoDataYaml="""
+configFromExternalFiles:
+  simple_url:
+    web_content: "https://raw.githubusercontent.com/thomas10-10/starterTree/master/configExample/config.yml"
+"""
+
+def getDemoData():
+    return demoDataYaml
 
 # pre traitement
 # input path_entry_name_content_cmd path_entry_name keya subKey source_dict tmpDir

@@ -20,11 +20,7 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.formatted_text import HTML,merge_formatted_text
 import themes.green
 import themes.grey
-import modules.downloadWebContent
-import modules.openWWW
-import modules.ssh
 #from modules.output.textable import Tableau as Tableau
-from modules.output.rich import Tableau as Tableau
 from shlex import quote 
 from prompt_toolkit.history import FileHistory
 from rich.console import Console
@@ -32,6 +28,15 @@ from jinja2 import Template
 #import base64
 #import paramiko
 #import colorama 
+
+from modules.output.rich import Tableau as Tableau
+
+import modules.downloadWebContent
+import modules.openWWW
+import modules.ssh
+#modules=["modules.downloadWebContent","modules.ssh","modules.openWWW"]
+modulesList=[modules.ssh,modules.openWWW,modules.downloadWebContent]
+
 
 listIcon=[]
 detectNerdFont= False
@@ -131,11 +136,13 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 		keya=key.encode('ascii',errors='ignore').decode()
 		#if "path_"+path_entry_name+keya not in path_entry_name_content:
 		path_entry_name_content["path_"+path_entry_name+keya]={}
+		path_entry_name_content["path_"+path_entry_name+keya]["type"]="system_st"
+		path_entry_name_content["path_"+path_entry_name+keya]["content"]="system_st"
 		#path_entry_name_content["path_"+path_entry_name+key]=source_dict[key]
 
 		for subKey in source_dict[key]:
 			icon=""
-			path_entry_name_content["path_"+path_entry_name+keya]["tags"]={}
+			#path_entry_name_content["path_"+path_entry_name+keya]["tags"]={}
 			if not isinstance(source_dict[key][subKey],dict):
 				self={}
 				self["tags"]=[]
@@ -179,6 +186,8 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 
 				if subKey in [keyword_gitlab_content_code_prompt_token, keyword_github_content_code_prompt_token, keyword_web_content] :	
 					if detectNerdFont: icon=""
+					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key][subKey]
+					path_entry_name_content["path_"+path_entry_name+keya]["description"]=subKey
 					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--pull"]={}
 					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--pull"][subKey]=source_dict[key][subKey]
 					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--encrypt"]={}
@@ -234,17 +243,29 @@ def jinjaFile2yaml(jinjaFile):
 
 #my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
 #my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"","")
-my_fun(jinjaFile2yaml(file_main),menu_completion,"","")
+
+
+dataDemo={}
+for m in modulesList:
+    #dataDemo = {**dataDemo , **yaml.load(eval(m+".getDemoData"),Loader=yaml.SafeLoader) }
+    dataDemoModules={}
+    #print(m.getDemoData())
+    dataDemoModules=yaml.load(m.getDemoData(),Loader=yaml.SafeLoader)
+    dataDemo = {**dataDemo , **dataDemoModules }
+
+if os.getenv("ST_DEMO") == '1' : 
+    my_fun(dataDemo,menu_completion,"","")
+else :
+    my_fun(jinjaFile2yaml(file_main),menu_completion,"","")
 
 completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
-
-bindings = KeyBindings()
 
 def getIcon(icon,defaultIcon=""):
     if detectNerdFont:
         return icon
     return defaultIcon
 
+bindings = KeyBindings()
 @bindings.add('c-c')
 def _(event):
 #" Exit when `c-x` is pressed. "
@@ -351,11 +372,13 @@ def fill_tableau(n,tableau_keys,path_entry_name_content_entry,tableau):
 			else:
 				tableau_lines.append(path_entry_name_content_entry[i])
 		else:
-			tableau_lines.append("none")
+			tableau_lines.append("")
 	tableau.add_row(row=tableau_lines)
 
 	
-def getPromptSearch(default_promptSearch):
+def getPromptSearch(default_promptSearch="all"):
+	if default_promptSearch=="all":
+		default_promptSearch=""
 	completer=WordCompleter(
 		[
 		    "name=",
@@ -391,7 +414,15 @@ def getPromptSearch(default_promptSearch):
 	except:
 		exit()
 	prompt=prompt.encode('ascii',errors='ignore').decode()
-	prompt_and_default="display=type,tags,description "+prompt
+	prompt_and_default="not type=system_st AND not type=settings display=type,tags,description  "+prompt
+	if prompt == "":
+		prompt="all"
+	if prompt[0:5] == "debug":
+		prompt_and_default="display=type,tags,description  "+prompt
+	if prompt[0:6] == "config":
+		prompt_and_default="display=type,tags,description AND type=settings "+prompt
+		#prompt=""
+	#prompt="not type=system_st AND not type=settings display=type,tags,description  "+prompt
 	#print(prompt.split(" "))
 	result=[]
 	#tab.set_cols_align(["l", "c", "c"])
@@ -529,7 +560,7 @@ def main():
 		exit()
 	if prompt_id == "--search":
 		#try:
-		getPromptSearch("")
+		getPromptSearch()
 			
 		#except Exception as e:  
 		#	print(str(e))
