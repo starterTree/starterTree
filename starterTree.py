@@ -481,7 +481,7 @@ def getPromptSearch(default_promptSearch="all"):
 									queryT=queryT+"("+" "
 								for t in i.split("=")[1].split(","):
 									if t is not "":
-										if 'tags' in path_entry_name_content[r] and (t.lower() in path_entry_name_content[r]["tags"] or t.upper() in path_entry_name_content[r]["tags"]):
+										if 'tags' in path_entry_name_content[r] and (t in path_entry_name_content[r]["tags"]) :
 											queryT=queryT+nextOperator+str(True)+" "
 										else: 	
 											queryT=queryT+nextOperator+str(False)+" "
