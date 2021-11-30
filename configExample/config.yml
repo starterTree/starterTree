@@ -1,3 +1,6 @@
+mySettingsNameisNotImportant:
+  starterTree_title: perso # change name starterTree left prompt (you can add nerdFont icon here)
+  starterTree_theme: grey # change theme starterTree to green
 mainName1:
   wezterm:
     cmd: "exec wezterm &" # cmd -> execute a command shell
@@ -9,6 +12,15 @@ mainName2:
 mainName3:
   myServer:
     ssh: "root@192.168.5.5" # ssh -> execute ssh command
+  myServer2:
+    ssh: "root@192.168.5.5"
+    tags: ["test"],["tag1"]
+  subDir:
+    myServer:
+      ssh: "root@192.168.5.5"
+    
+    
+# do not copy the following code because you have to replace the urls/files (they do not exist)
 anOtherMain: 
   file_content_relative: subDir/anotherConf.yml # read an other config file on relative path
 anOtherOtherMain:
@@ -24,9 +36,6 @@ anOtherOtherMain3:
   github_api_content_prompt_token: https://api.github.com/repos/userFoo/PrivateDots/contents/perso.yml.asc # read other config file from api github, it will prompt your github token
   # if you want remove cache and reload this content # t> anOtherOtherMain3 --pull
   # its support encrypt file with gpg, the extension name must be .asc
-mySettingsNameisNotImportant:
-  starterTree_title: perso # change name starterTree left prompt
-  starterTree_theme: green # change theme starterTree to green
 kubernetes:
   kinde:
     kubeconfig_file: "~/.kube/kindLocal.asc" # execute bash prompt with export kubeconfig="~/.kube/kindLocal.asc"
@@ -35,3 +44,4 @@ kubernetes:
 
 
   
+
