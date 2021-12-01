@@ -42,7 +42,7 @@ t > --update=v0.7
 ### Usage
 to run:
 ```
-$ t
+$ st
 ```
 A configuration must be in `~/.config/starterTree/config.yml`
 
