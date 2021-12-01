@@ -9,6 +9,9 @@ command launcher and ssh connection manager organised in a tree structure with a
 
 ![](https://i.imgur.com/R9UEoVa.png)
 
+[<img src="https://www.pikpng.com/pngl/b/509-5090528_button-parent-watch-landing-page-04-graphic-design.png" width="128"/>](https://startertree.readthedocs.io/en/latest/features/#navigation) 
+
+[documentation](https://startertree.readthedocs.io)
 
 ## Getting Started
 
@@ -22,9 +25,9 @@ curl -L https://raw.githubusercontent.com/starterTree/starterTree/master/install
 
 <!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.3/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
 
-to enable icons, you must install nerd fonts [nerdFonts](https://www.nerdfonts.com/font-downloads)
+>to enable icons, you must install nerd fonts [nerdFonts](https://www.nerdfonts.com/font-downloads)
 
-more details here
+more details [here](https://startertree.readthedocs.io/en/latest/install)
 
 #### UPDATE 
 
@@ -44,7 +47,7 @@ $ t
 ```
 A configuration must be in `~/.config/starterTree/config.yml`
 
-more details here
+more details [here](https://startertree.readthedocs.io/en/latest/install#usage)
 
 
 
