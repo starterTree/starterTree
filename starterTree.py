@@ -25,6 +25,7 @@ from shlex import quote
 from prompt_toolkit.history import FileHistory
 from rich.console import Console
 from jinja2 import Template
+import plugins.Plugin
 #import base64
 #import paramiko
 #import colorama 
@@ -201,26 +202,12 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 					#my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
 					#print(tmpDir+os.path.basename(source_dict[key][subKey]))
 					my_fun(jinjaFile2yaml(tmpDir+os.path.basename(source_dict[key][subKey])),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)	
-				if subKey == www_module_keyword:
-					modules.openWWW.register(source_dict[key],path_entry_name_content["path_"+path_entry_name+keya])
-					if detectNerdFont: icon=modules.openWWW.getIcon()
+				#Register Plugins
+				if subKey in plugins.Plugin.pluginsActivated:
+					plugins.Plugin.pluginsActivated[subKey].register(source_dict[key],path_entry_name_content["path_"+path_entry_name+keya])	
+					if detectNerdFont: icon=plugins.Plugin.pluginsActivated[subKey].getIcon()
 					menu_completion[icon+key]=None
-				if subKey == ssh_module_keyword:
-					modules.ssh.register(source_dict[key],path_entry_name_content["path_"+path_entry_name+keya])
-					if detectNerdFont: icon=modules.ssh.getIcon()
-					menu_completion[icon+key]=None
-				if subKey == keyword_module_cmd:
-					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
-					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key][subKey]
-					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
-					menu_completion[icon+key]=None
-				if subKey == keyword_module_cmd_c:
-					path_entry_name_content["path_"+path_entry_name+keya]["type"]=subKey
-					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key][subKey]
-					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
-					menu_completion[icon+key]=None
+
 				#if subKey == keyword_file_content_relative:
 					#my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
 					
@@ -246,11 +233,17 @@ def jinjaFile2yaml(jinjaFile):
 
 
 dataDemo={}
-for m in modulesList:
-    #dataDemo = {**dataDemo , **yaml.load(eval(m+".getDemoData"),Loader=yaml.SafeLoader) }
+#for m in modulesList:
+#    #dataDemo = {**dataDemo , **yaml.load(eval(m+".getDemoData"),Loader=yaml.SafeLoader) }
+#    dataDemoModules={}
+#    #print(m.getDemoData())
+#    dataDemoModules=yaml.load(m.getDemoData(),Loader=yaml.SafeLoader)
+#    dataDemo = {**dataDemo , **dataDemoModules }
+
+for m in plugins.Plugin.pluginsActivated:
+    print(m)
     dataDemoModules={}
-    #print(m.getDemoData())
-    dataDemoModules=yaml.load(m.getDemoData(),Loader=yaml.SafeLoader)
+    dataDemoModules=yaml.load(plugins.Plugin.pluginsActivated[m].getDemoDataYaml(),Loader=yaml.SafeLoader)
     dataDemo = {**dataDemo , **dataDemoModules }
 
 if os.getenv("ST_DEMO") == '1' : 
@@ -610,26 +603,15 @@ def main():
 		exit()
 
 	if  prompt_id in path_entry_name_content:
+		print(path_entry_name_content[prompt_id])
 		text=prompt_id 
 		if keyword_kubeconfig_file in path_entry_name_content[prompt_id]:
 			startKubectl(path_entry_name_content[prompt_id][keyword_kubeconfig_file])
+		# run modules
+		for i in plugins.Plugin.pluginsActivated:
+			if i in path_entry_name_content[prompt_id]:
+				plugins.Plugin.pluginsActivated[i].runInMenu(path_entry_name_content[prompt_id])
 
-		if ssh_module_keyword in path_entry_name_content[prompt_id]:
-			modules.ssh.launch(ssh_object= path_entry_name_content[prompt_id] )
-
-		if www_module_keyword in path_entry_name_content[prompt_id]:
-			modules.openWWW.launch(address= path_entry_name_content[prompt_id][www_module_keyword] )
-
-		if keyword_module_cmd in path_entry_name_content[prompt_id] or keyword_module_cmd_c in path_entry_name_content[prompt_id]:
-			if  keyword_module_cmd_c in path_entry_name_content[prompt_id]:
-				text = path_entry_name_content[prompt_id][keyword_module_cmd_c]
-				text = prompt(">", default='%s' % text,key_bindings=bindings,)
-			else:
-				text = path_entry_name_content[prompt_id][keyword_module_cmd]
-			if text is None:
-				exit()
-			os.system(text)
-		
 		#with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
 		#	myfile.write(text+' # '+historyName+'\n')
 
