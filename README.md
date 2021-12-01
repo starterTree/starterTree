@@ -10,42 +10,21 @@ command launcher and ssh connection manager organised in a tree structure with a
 ![](https://i.imgur.com/R9UEoVa.png)
 
 
-## About The Project
-
-### Built With
-
-* Python3 with module [prompt_toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit)
-
-<!-- GETTING STARTED -->
 ## Getting Started
-
-
-
-### Prerequisites
-
-
-* Linux system
-
 
 ### Installation
 
-Download and install
+Download and install (only on linux for now)
 
 ```
 curl -L https://raw.githubusercontent.com/starterTree/starterTree/master/install.sh | bash
 ```
 
-or
-
-```bash  
-cd /opt 
-sudo curl -L "https://github.com/starterTree/starterTree/releases/download/$(basename $(curl -fsSLI -o /dev/null -w %{url_effective} https://github.com/starterTree/starterTree/releases/latest))/starterTree.tar.gz" | sudo tar -xz 
-sudo ln -s /opt/starterTree/starterTree /usr/local/bin/t
-```
-
 <!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.3/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
 
 to enable icons, you must install nerd fonts [nerdFonts](https://www.nerdfonts.com/font-downloads)
+
+more details here
 
 #### UPDATE 
 
@@ -65,22 +44,7 @@ $ t
 ```
 A configuration must be in `~/.config/starterTree/config.yml`
 
-you need press key space or tab to use autocomplete 
-
-There is a sample configuration file in git depot `exampleConfig/config.yml`
-    
-Otherwise you can specify the path of the config file as an argument:
-```
- t /tmp/myconfig.yml
-```
->and you can use the alias command to encapsulate the config file:
-` alias t="t /tmp/myconfig.yml"`
-or to manage several different configurations:
-` alias toto1="t /other/myconfig.yml"`
-` alias toto2="t /other/anOtherconfig.yml"`
-or run starterTree via bind:
-`bind -x '"\C-p":t'`
-
+more details here
 
 
 
