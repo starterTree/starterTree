@@ -1,5 +1,5 @@
 
-![logo](https://i.imgur.com/nHDBrIC.png) 
+![logo](https://i.imgur.com/nHDBrIC.png) [<img src="https://www.redhat.com/cms/managed-files/styles/xlarge/s3/tux-327x360.png?itok=puszajU_" width="24"/>]() 
 
 | [documentation](https://startertree.readthedocs.io)  |   [install](https://startertree.readthedocs.io/en/latest/install) | [usage](https://startertree.readthedocs.io/en/latest/usage) | [features](https://startertree.readthedocs.io/en/latest/features) |
 # StarterTree
@@ -13,7 +13,8 @@ command launcher and ssh connection manager organised in a tree structure with a
 
 [<img src="https://www.pikpng.com/pngl/b/509-5090528_button-parent-watch-landing-page-04-graphic-design.png" width="128"/>](https://startertree.readthedocs.io/en/latest/features/#navigation) 
 
-
+<!--
+# GO DOCUMENTATION SITE MAY BE OUTDATED
 ### Installation
 
 Download and install (only on linux for now)
@@ -22,7 +23,7 @@ Download and install (only on linux for now)
 curl -L https://raw.githubusercontent.com/starterTree/starterTree/master/install.sh | bash
 ```
 
-<!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.3/az.tar.gz' | tar -xz - -C az --strip-components=1 -->
+<!--  curl -L ’https://github.com/thomas10-10/az/releases/download/v0.3/az.tar.gz' | tar -xz - -C az --strip-components=1 
 
 >to enable icons, you must install nerd fonts [nerdFonts](https://www.nerdfonts.com/font-downloads)
 
@@ -38,7 +39,7 @@ t > --update
 t > --update=v0.7
 ```
 
-<!-- USAGE EXAMPLES -->
+<!-- USAGE EXAMPLES
 ### Usage
 to run:
 ```
