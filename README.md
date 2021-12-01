@@ -1,5 +1,7 @@
 
-![logo](https://i.imgur.com/nHDBrIC.png)
+![logo](https://i.imgur.com/nHDBrIC.png) 
+
+| [documentation](https://startertree.readthedocs.io)  |   [install](https://startertree.readthedocs.io/en/latest/install) | [usage](https://startertree.readthedocs.io/en/latest/usage) | [features](https://startertree.readthedocs.io/en/latest/features) |
 # StarterTree
 command launcher and ssh connection manager organised in a tree structure with autocompletion <br>
 
@@ -11,9 +13,6 @@ command launcher and ssh connection manager organised in a tree structure with a
 
 [<img src="https://www.pikpng.com/pngl/b/509-5090528_button-parent-watch-landing-page-04-graphic-design.png" width="128"/>](https://startertree.readthedocs.io/en/latest/features/#navigation) 
 
-[documentation](https://startertree.readthedocs.io)
-
-## Getting Started
 
 ### Installation
 
@@ -40,7 +39,7 @@ t > --update=v0.7
 ```
 
 <!-- USAGE EXAMPLES -->
-## Usage
+### Usage
 to run:
 ```
 $ t
