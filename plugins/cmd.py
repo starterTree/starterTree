@@ -25,25 +25,21 @@ def _(event):
 
 
 def register(configDict,stDict):
-    stDict["type"]="cmd"
-    stDict["content"]=configDict["cmd"]
-    stDict["description"]=configDict["cmd"]
-    stDict["cmd"]=configDict["cmd"]
     if "prompt" in configDict:
         stDict["prompt"]=configDict["prompt"]
 
 
-def runInMenu(stDict):
-    cmd = stDict["cmd"]
-    if "prompt" in stDict and stDict["prompt"] not in ["No","no","NO","False","false","FALSE","0"]:
+def runInMenu(args):
+    cmd = args["objet"]["cmd"]
+    if "prompt" in args["objet"] and args["objet"]["prompt"] not in ["No","no","NO","False","false","FALSE","0"]:
         cmd = prompt("> ", default='%s' % cmd,key_bindings=bindings,)
     if cmd is not None:   
         os.system(cmd)   
 
 
 
-plugin=Plugin(demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="")
-pluginsActivated["cmd"]=plugin
+plugin=Plugin(namePlugin="cmd",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="")
+#pluginsActivated["cmd"]=plugin
 
 ##########
 #code bin#

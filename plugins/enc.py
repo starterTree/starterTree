@@ -4,13 +4,10 @@ import os
 import rich
 from rich.console import Console
 from rich.panel import Panel
-from rich.pretty import pprint
-
-#voir toute la commane qui va etre executé
 
 demoDataYaml="""
-set:
-  starterTree_theme: grey
+encrypt:
+  enc: 
 serversDemoData:
   pet:
     demoData_ssh_server1:
@@ -35,25 +32,23 @@ serversDemoData:
 
 
 def register(configDict,stDict):
-    stDict["alter"]="mondial"
-    if "message_rich" in configDict:
-        stDict["message_rich"]=configDict["message_rich"]
+    #if "message_rich" in configDict:
+    #    stDict["message_rich"]=configDict["message_rich"]
+    pass
 
-        
+def runInMenu(stDict):
 
-def runInMenu(args):
-#        pprint(stDict,expand_all=True)
-    ssh_cmd = "ssh "+args["objet"]["ssh"]
-    if "message_rich" in args["objet"]:
+    ssh_cmd = "ssh "+stDict["ssh"]
+    if "message_rich" in stDict:
         rich.console
         console=Console()
-        console.print(Panel.fit(args["objet"]["message_rich"]))
+        console.print(Panel.fit(stDict["message_rich"]))
     os.system(ssh_cmd)   
 
 
 
 from plugins.Plugin import Plugin,pluginsActivated
-plugin=Plugin(namePlugin="ssh",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="",options=["debug"])
+plugin=Plugin(namePlugin="enc",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="")
 
 
 

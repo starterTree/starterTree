@@ -17,21 +17,15 @@ linksDemoData:
 """
  
 
-def register(configDict,stDict):
-    stDict["type"]="www"
-    stDict["content"]=configDict["www"]
-    stDict["description"]=configDict["www"]
-    stDict["www"]=configDict["www"]
 
-
-def runInMenu(stDict):
-	text = "xdg-open "+stDict["www"]
+def runInMenu(args):
+	text = "xdg-open "+args["objet"]["www"]
 	os.system(text)   
 
 
 
-plugin=Plugin(demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="")
-pluginsActivated["www"]=plugin
+plugin=Plugin(namePlugin="www",demoDataYaml=demoDataYaml,runInMenu=runInMenu,icon="")
+#pluginsActivated["www"]=plugin
 
 
 
