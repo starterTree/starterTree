@@ -53,7 +53,7 @@ def runInMenu(args):
 
 
 from plugins.Plugin import Plugin,pluginsActivated
-plugin=Plugin(namePlugin="ssh",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="",options=["debug"])
+plugin=Plugin(namePlugin="ssh",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="",titleIcon="",options=["debug"])
 
 
 

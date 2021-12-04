@@ -18,9 +18,10 @@ settings:
  # icon: ""
   update:
     setting: update
-    description: update to new version, add --v0.14f to downlad precise version
+    description: by default update to new version, add `--v0.14f` to downlad precise version
   version:
     setting: version
+    description: show version
   debug:
     completion:
       setting: completion

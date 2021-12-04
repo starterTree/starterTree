@@ -206,6 +206,7 @@ def getPromptSearch(path_entry_name_content,default_promptSearch="all",style=Non
 dataYaml="""
 search:
   search: mode    
+  description: search element by tags,name or type and execute action on this
 """
 
 def runInMenu(args):

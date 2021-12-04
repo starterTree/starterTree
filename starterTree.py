@@ -112,7 +112,7 @@ def tags(key):
 
 
 
-def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
+def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path,plugins):
 	for key in source_dict:
 		keya=key.encode('ascii',errors='ignore').decode()
 		#if "path_"+path_entry_name+keya not in path_entry_name_content:
@@ -154,7 +154,7 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
 					menu_completion[icon+key]={}
 					#my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
-					my_fun(jinjaFile2yaml(absolute_path_main_config_file+source_dict[key][subKey]),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
+					my_fun(jinjaFile2yaml(absolute_path_main_config_file+source_dict[key][subKey]),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya,plugins)
 
 				if subKey in [keyword_gitlab_content_code_prompt_token, keyword_github_content_code_prompt_token, keyword_web_content] :	
 					if detectNerdFont: icon=""
@@ -172,7 +172,7 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 					menu_completion[icon+key]={}
 					#my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
 					#print(tmpDir+os.path.basename(source_dict[key][subKey]))
-					my_fun(jinjaFile2yaml(tmpDir+os.path.basename(source_dict[key][subKey])),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)	
+					my_fun(jinjaFile2yaml(tmpDir+os.path.basename(source_dict[key][subKey])),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya,plugins)	
 				#Register Plugins
 				if subKey in plugins.Plugin.pluginsActivated:
 					if detectNerdFont: icon=plugins.Plugin.pluginsActivated[subKey].getIcon()
@@ -191,7 +191,7 @@ def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path):
 				menu_completion[icon+key+""]["--list"]={}
 				#path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
 				#path_entry_name_content["path_"+path_entry_name+key+"--list"][subKey]=source_dict[key]
-				my_fun(source_dict[key], menu_completion[icon+key+""] ,path_entry_name+keya,path_entry_name_path+"/"+keya)
+				my_fun(source_dict[key], menu_completion[icon+key+""] ,path_entry_name+keya,path_entry_name_path+"/"+keya,plugins)
 				#del path_entry_name_content["path_"+path_entry_name+keya]
 				
 menu_completion={}
@@ -227,11 +227,11 @@ for m in plugins.Plugin.pluginsActivated:
     dataDemo = {**dataDemo , **dataDemoModules }
 
 if os.getenv("ST_DEMO") == '1' : 
-    my_fun(dataYaml,menu_completion,"","")
-    my_fun(dataDemo,menu_completion,"","")
+    my_fun(dataYaml,menu_completion,"","",plugins)
+    my_fun(dataDemo,menu_completion,"","",plugins)
 else :
-    my_fun(dataYaml,menu_completion,"","")
-    my_fun(jinjaFile2yaml(file_main),menu_completion,"","")
+    my_fun(dataYaml,menu_completion,"","",plugins)
+    my_fun(jinjaFile2yaml(file_main),menu_completion,"","",plugins)
 
 completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
 
@@ -251,7 +251,8 @@ def _(event):
 def get_toolbar():
 	result=get_rprompt()	
 	with console.capture() as capture:
-	    grid =Table(expand=False, box=box.SQUARE,show_header=False,show_edge=False,padding=(1,1))
+	    #grid =Table(expand=False, box=box.SQUARE,show_header=False,show_edge=False,padding=(0,0))
+	    grid =Table(expand=False, box=None,show_header=False,show_edge=False,padding=(0,0))
 	    text="""   ____ __ 
   / __// /_ 
  _\ \ / __/ 
@@ -264,9 +265,9 @@ def get_toolbar():
 ███████    ██    
      ██    ██    
 ███████    ██"""   
-	    #grid.add_column(style="red")
+	    grid.add_column(style="#444444")
 	    #grid.add_column(style="green on purple")
-	    grid.add_row("[bold #444444 on red]"+text+"[/bold #444444 on red]", result)
+	    grid.add_row("[bold  on red]"+text+"[/bold  on red]", result)
 	    #grid.add_row("[bold #444444 on red]"+text2+"[/bold #444444 on red]", "[bold magenta]COMPLETED [green]:heavy_check_mark:")
 	    console.print(grid)
 	str_output = capture.get()
@@ -385,6 +386,7 @@ def main():
 			os.system("cat "+tmpDir+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable"])+" | gpg -a --cipher-algo AES256 -c")			
 		if "encryptable-kube" in path_entry_name_content_cmd[prompt_id]:
 			os.system("cat "+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
+
 		if keyword_web_content in path_entry_name_content_cmd[prompt_id]:
 			modules.downloadWebContent.launch(path_entry_name_content=path_entry_name_content,prompt_id=prompt_id,keyword_web_content=keyword_web_content,tmpDir=tmpDir)
 			#downloadFromUrl(path_entry_name_content[prompt_id.replace("--pull","")][keyword_web_content])
@@ -403,7 +405,7 @@ def main():
 		text=prompt_id 
 		for i in plugins.Plugin.pluginsActivated:
 			if i in path_entry_name_content[prompt_id]:
-				plugins.Plugin.pluginsActivated[i].runInMenu(path_entry_name_content[prompt_id],option=option,menuCompletion=menu_completion,pathEntry=path_entry_name_content,style=style)
+				plugins.Plugin.pluginsActivated[i].runInMenu(path_entry_name_content[prompt_id],option=option,menuCompletion=menu_completion,pathEntry=path_entry_name_content,style=style,tmpDir=tmpDir)
 
 		#with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
 		#	myfile.write(text+' # '+historyName+'\n')
