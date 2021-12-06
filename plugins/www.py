@@ -24,7 +24,7 @@ def runInMenu(args):
 
 
 
-plugin=Plugin(namePlugin="www",demoDataYaml=demoDataYaml,runInMenu=runInMenu,icon="")
+plugin=Plugin(namePlugin="www",demoDataYaml=demoDataYaml,runInMenu=runInMenu,icon=" ",titleIcon="",titleColor="blue")
 #pluginsActivated["www"]=plugin
 
 

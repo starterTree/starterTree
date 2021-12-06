@@ -14,9 +14,13 @@ set:
 serversDemoData:
   pet:
     demoData_ssh_server1:
+      cmd: coco
+      cmd: coco2
       ssh: root@192.168.1.1
       tags: ["demoData","server","ssh","1","web","web1"]
       message_rich: "toto"
+      cmd:
+        cmd: coco1111
     demoData_ssh_server2:
       ssh: root@192.168.1.2
       tags: ["demoData","server","ssh","2","web","web2"]
@@ -34,15 +38,15 @@ serversDemoData:
 """
 
 
-def register(configDict,stDict):
-    stDict["alter"]="mondial"
+def register(args):
+    configDict=args["configDict"]
+    stDict=args["stDict"]
     if "message_rich" in configDict:
         stDict["message_rich"]=configDict["message_rich"]
 
         
 
 def runInMenu(args):
-#        pprint(stDict,expand_all=True)
     ssh_cmd = "ssh "+args["objet"]["ssh"]
     if "message_rich" in args["objet"]:
         rich.console
@@ -53,16 +57,7 @@ def runInMenu(args):
 
 
 from plugins.Plugin import Plugin,pluginsActivated
-plugin=Plugin(namePlugin="ssh",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="",titleIcon="",options=["debug"])
+plugin=Plugin(namePlugin="ssh",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="⠀",titleIcon="",titleColor="red",options=["debug"])
 
 
-
-##########
-#code bin#
-##########
-					#path_entry_name_content["path_"+path_entry_name+keya]=source_dict[key]
-#					if len(source_dict[key][subKey].split("{{")) == 2 and len(source_dict[key][subKey].split("}}")) == 2:
-#						print(source_dict[key][subKey].split("{{")[1].split("}}")[0])
-#						path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey].replace("{{"+source_dict[key][subKey].split("{{")[1].split("}}")[0]+"}}" ,eval(source_dict[key][subKey].split("{{")[1].split("}}")[0]))
-#
 

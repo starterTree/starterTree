@@ -26,9 +26,12 @@ from prompt_toolkit.history import FileHistory
 from rich.console import Console
 from jinja2 import Template
 import plugins.Plugin
+from modules.utils import my_fun 
 #import base64
 #import paramiko
 #import colorama 
+
+from rich.pretty import pprint
 
 from modules.output.rich import Tableau as Tableau
 
@@ -66,12 +69,12 @@ keyword_file_content_relative="file_content_relative"
 keyword_web_content="web_content"
 keyword_gitlab_content_code_prompt_token="gitlab_api_content_prompt_token"
 keyword_github_content_code_prompt_token="github_api_content_prompt_token"
-www_module_keyword="www"
 ssh_module_keyword="ssh"
 #modules=""
 absolute_path_main_config_file=os.path.dirname(file_main)+"/"
 #style=Style.from_dict({Token.RPrompt: 'bg:#ff0066 #ffffff',})
-style=Style.from_dict({})
+settings={}
+#style=Style.from_dict(settings)
 
 def downloadFromGitLabWithPromptToken(url):
 	print(url)
@@ -112,111 +115,20 @@ def tags(key):
 
 
 
-def my_fun(source_dict,menu_completion,path_entry_name,path_entry_name_path,plugins):
-	for key in source_dict:
-		keya=key.encode('ascii',errors='ignore').decode()
-		#if "path_"+path_entry_name+keya not in path_entry_name_content:
-		path_entry_name_content["path_"+path_entry_name+keya]={}
-		path_entry_name_content["path_"+path_entry_name+keya]["type"]="system_st"
-		path_entry_name_content["path_"+path_entry_name+keya]["content"]="system_st"
-		#path_entry_name_content["path_"+path_entry_name+key]=source_dict[key]
-
-		for subKey in source_dict[key]:
-			icon=""
-			#path_entry_name_content["path_"+path_entry_name+keya]["tags"]={}
-			if not isinstance(source_dict[key][subKey],dict):
-				#self={}
-				#self["tags"]=[]
-				path_entry_name_content["path_"+path_entry_name+keya]["path"]=path_entry_name_path+"/"
-				path_entry_name_content["path_"+path_entry_name+keya]["name"]=keya
-				#CONFIGURE SETTINGS
-				if subKey in ["starterTree_disableIcon","starterTree_title","starterTree_theme"]: 
-					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key]
-					path_entry_name_content["path_"+path_entry_name+keya]["type"]="settings"
-					if subKey == "starterTree_disableIcon":
-						global detectNerdFont
-						detectNerdFont= False
-					if subKey == "starterTree_title":
-						global promptTitle
-						promptTitle=source_dict[key][subKey]
-					if subKey == "starterTree_theme":
-						global style
-						if source_dict[key][subKey] == "green": style = Style.from_dict(themes.green.completionMenu)
-						if source_dict[key][subKey] == "grey":  style = Style.from_dict(themes.grey.completionMenu)
-					
-				#if subKey == "tags":
-				#	self["tags"]=[]
-				#	path_entry_name_content["path_"+path_entry_name+keya]["tags"]={}
-				#	path_entry_name_content["path_"+path_entry_name+keya]["tags"]=source_dict[key][subKey]
-				#	self["tags"]=source_dict[key][subKey]
-				if subKey == keyword_file_content_relative:
-					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey]
-					menu_completion[icon+key]={}
-					#my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
-					my_fun(jinjaFile2yaml(absolute_path_main_config_file+source_dict[key][subKey]),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya,plugins)
-
-				if subKey in [keyword_gitlab_content_code_prompt_token, keyword_github_content_code_prompt_token, keyword_web_content] :	
-					if detectNerdFont: icon=""
-					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key][subKey]
-					path_entry_name_content["path_"+path_entry_name+keya]["description"]=subKey
-					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--pull"]={}
-					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--pull"][subKey]=source_dict[key][subKey]
-					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--encrypt"]={}
-					path_entry_name_content_cmd["path_"+path_entry_name+keya+"--encrypt"]["encryptable"]=source_dict[key][subKey]
-					if not os.path.exists(tmpDir+os.path.basename(source_dict[key][subKey])):
-						#os.system("curl -L -o "+tmpDir+os.path.basename(source_dict[key][subKey])+" "+source_dict[key][subKey])
-						if subKey == keyword_gitlab_content_code_prompt_token: downloadFromGitLabWithPromptToken(source_dict[key][subKey])
-						if subKey == keyword_github_content_code_prompt_token: downloadFromGitHubWithPromptToken(source_dict[key][subKey])
-						if subKey == keyword_web_content: downloadFromUrl(source_dict[key][subKey])
-					menu_completion[icon+key]={}
-					#my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
-					#print(tmpDir+os.path.basename(source_dict[key][subKey]))
-					my_fun(jinjaFile2yaml(tmpDir+os.path.basename(source_dict[key][subKey])),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya,plugins)	
-				#Register Plugins
-				if subKey in plugins.Plugin.pluginsActivated:
-					if detectNerdFont: icon=plugins.Plugin.pluginsActivated[subKey].getIcon()
-					menu_completion[icon+key]={}
-					plugins.Plugin.pluginsActivated[subKey].register(configDict=source_dict[key],stDict=path_entry_name_content["path_"+path_entry_name+keya],menuDict=menu_completion[icon+key])	
-
-				#if subKey == keyword_file_content_relative:
-					#my_fun(yaml.load(open(absolute_path_main_config_file+source_dict[key][subKey], 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+key)
-					
-				
-			if isinstance(source_dict[key][subKey], dict):
-				if detectNerdFont: icon=""
-				if "icon" in source_dict[key] and detectNerdFont:
-					icon=source_dict[key]["icon"]
-				menu_completion[icon+key+""]={}
-				menu_completion[icon+key+""]["--list"]={}
-				#path_entry_name_content["path_"+path_entry_name+key+"--list"]={}
-				#path_entry_name_content["path_"+path_entry_name+key+"--list"][subKey]=source_dict[key]
-				my_fun(source_dict[key], menu_completion[icon+key+""] ,path_entry_name+keya,path_entry_name_path+"/"+keya,plugins)
-				#del path_entry_name_content["path_"+path_entry_name+keya]
 				
 menu_completion={}
 
 def jinjaFile2yaml(jinjaFile):
     with open(jinjaFile) as file_:
         template = Template(file_.read())
-    #print(template.render(name='John'))
     return yaml.load(template.render(),Loader=yaml.SafeLoader)
 
-#my_fun(yaml.load(open(tmpDir+os.path.basename(source_dict[key][subKey]), 'r'),Loader=yaml.SafeLoader),menu_completion[icon+key],path_entry_name+keya,path_entry_name_path+"/"+keya)
-#my_fun(yaml.load(open(file_main, 'r'),Loader=yaml.SafeLoader),menu_completion,"","")
 
 
 dataDemo={}
 dataYaml={}
-#for m in modulesList:
-#    #dataDemo = {**dataDemo , **yaml.load(eval(m+".getDemoData"),Loader=yaml.SafeLoader) }
-#    dataDemoModules={}
-#    #print(m.getDemoData())
-#    dataDemoModules=yaml.load(m.getDemoData(),Loader=yaml.SafeLoader)
-#    dataDemo = {**dataDemo , **dataDemoModules }
 
 for m in plugins.Plugin.pluginsActivated:
-    print(m)
     dataDemoModules={}
     dataModules={}
 
@@ -225,13 +137,13 @@ for m in plugins.Plugin.pluginsActivated:
 
     dataYaml = {**dataYaml , **dataModules }
     dataDemo = {**dataDemo , **dataDemoModules }
-
+_plugins=plugins.Plugin.pluginsActivated
 if os.getenv("ST_DEMO") == '1' : 
-    my_fun(dataYaml,menu_completion,"","",plugins)
-    my_fun(dataDemo,menu_completion,"","",plugins)
+    for data in [dataYaml,dataDemo]:
+        my_fun(source_dict=data,menu_completion=menu_completion,path_entry_name_content=path_entry_name_content,path_entry_name="",path_entry_name_path="",plugins=_plugins,tab="\t",settings=settings)
 else :
-    my_fun(dataYaml,menu_completion,"","",plugins)
-    my_fun(jinjaFile2yaml(file_main),menu_completion,"","",plugins)
+    for data in [dataYaml,jinjaFile2yaml(file_main)]:
+        my_fun(source_dict=data ,menu_completion=menu_completion ,path_entry_name_content=path_entry_name_content, path_entry_name="", path_entry_name_path="", plugins=_plugins,tab="\t",settings=settings)
 
 completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
 
@@ -427,6 +339,7 @@ console=Console()
 
 
 if __name__ == "__main__":
+    style=settings["theme"]
     console=Console()
     #console.rule(style="red")
     #console.print(Panel("dd"))

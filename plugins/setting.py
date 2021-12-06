@@ -5,6 +5,8 @@ import rich
 from rich.console import Console
 from rich.panel import Panel
 from rich.pretty import pprint
+import themes
+from prompt_toolkit.styles import Style
 #from starterTree import path_entry_name_content
 
 #voir toute la commane qui va etre executé
@@ -15,11 +17,21 @@ demoDataYaml="""
 
 dataYaml="""
 settings:
- # icon: ""
+  icon: ""
+#  test:
+#    setting:
+#      starterTree_title: bo
+  config:
+    setting: config
+    starterTree_title: starterTree
+    starterTree_theme: grey
+    #starterTree_disableIcon: yes
   update:
+    icon: "⠀"
     setting: update
     description: by default update to new version, add `--v0.14f` to downlad precise version
   version:
+    icon: "⠀"
     setting: version
     description: show version
   debug:
@@ -32,10 +44,18 @@ settings:
 
 """
 
-def register(configDict,stDict):
+def register(args):
+    configDict=args["configDict"]
+    stDict=args["stDict"]
+    settings=args["settings"]
     stDict["type"]="settings"
-    pass
-        
+    if "starterTree_title" in configDict:
+        pass
+    if "starterTree_theme" in configDict:
+        style = eval("Style.from_dict(themes."+configDict["starterTree_theme"]+".completionMenu)")
+        settings["theme"]={}
+        settings["theme"]=style
+        stDict["starterTree_theme"]=configDict["starterTree_theme"]
 
 def runInMenu(args):
     stDict=args["objet"]
@@ -59,7 +79,7 @@ def runInMenu(args):
 
 
 from plugins.Plugin import Plugin,pluginsActivated
-plugin=Plugin(namePlugin="setting",demoDataYaml=demoDataYaml,dataYaml=dataYaml,register=register,runInMenu=runInMenu,icon=" ",options=["debug"])
+plugin=Plugin(namePlugin="setting",demoDataYaml=demoDataYaml,dataYaml=dataYaml,register=register,runInMenu=runInMenu,icon="⠀",titleIcon="",options=["debug"])
 
 
 

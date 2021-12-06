@@ -69,12 +69,13 @@ class Plugin :
 
 
     'This is Plugin class for interract with st'
-    def __init__(self,namePlugin="foo",demoDataYaml="{}",icon="",titleIcon="",dataYaml="{}",register=None,runInMenu=dummyRunInMenu,getContentForRprompt=None,options=[],optionDebug=optionDebug):
+    def __init__(self,namePlugin="foo",demoDataYaml="{}",icon="",titleIcon="",titleColor="#666666",dataYaml="{}",register=None,runInMenu=dummyRunInMenu,getContentForRprompt=None,options=[],optionDebug=optionDebug):
         self.namePlugin=namePlugin
         self.demoDataYaml=demoDataYaml
         self.dataYaml=dataYaml
         self.icon=icon
         self.titleIcon=titleIcon
+        self.titleColor=titleColor
         self._register=register
         self._runInMenu=runInMenu
         self._getContentForRprompt=getContentForRprompt
@@ -94,7 +95,7 @@ class Plugin :
         return self.dataYaml
 
     def getIcon(self):
-        return self.icon
+        return getIcon(self.icon)
     def getTitleIcon(self):
         return self.titleIcon
 
@@ -106,13 +107,13 @@ class Plugin :
             nameLeft="" 
             for i in (self.getTitleIcon()+stDict["type"].upper()):
                 #nameLeft=nameLeft+"[bold #444444 on white]"+i+""+"\n"
-                nameLeft=nameLeft+"[bold #666666 on white]"+i+""+"\n"
+                nameLeft=nameLeft+"[bold on white]"+i+""+"\n"
             grid =Table(expand=False, box=None,show_header=False,show_edge=False,padding=(0,1))
-            grid.add_column(style="#666666")
+            grid.add_column(style=self.titleColor)
             grid2 =Table(expand=False, box=None,show_header=False,show_edge=False,padding=(0,1))
-            grid2.add_row("[bold #444444 on white]"+stDict["description"])
-            grid2.add_row(Markdown("# to "))
-            grid2.add_row(Markdown("`bash` "))
+            grid2.add_row("[bold #444444 on white]\n"+stDict["description"]+"\n")
+            #grid2.add_row(Markdown("# to "))
+            #grid2.add_row(Markdown("`bash` "))
             grid2.add_row(displayTags(stDict["tags"]))
             grid.add_row(nameLeft,grid2)
             return grid
@@ -120,7 +121,17 @@ class Plugin :
         #else:
         #    return self._getContentForRprompt(stDict)
 
-    def register(self,configDict,stDict,menuDict=None):
+    def register(self,configDict,stDict,menuDict=None,key=None,menu=None,path=None,settings=None):
+        log={"name":self.namePlugin, "function":"register","configDict": configDict, "stDict":stDict,"menuDict":menuDict }
+        icon=self.getIcon()
+        if "icon" in configDict and detectNerdFont:
+                icon=configDict["icon"]
+        key_menu_completion=(icon+key).replace(" ","⠀")
+        menu[key_menu_completion]={}
+
+        stDict["path"]=path
+        stDict["name"]=key
+
         stDict["type"]=self.namePlugin
         stDict["content"]=configDict[self.namePlugin]
         stDict["description"]=configDict[self.namePlugin]
@@ -130,11 +141,12 @@ class Plugin :
         if "tags" in configDict:
             stDict["tags"]=configDict["tags"]
         stDict[self.namePlugin]=configDict[self.namePlugin]
+        #stDict=dict(configDict)
         for i in self.options:
-            menuDict["--"+i]={}
+            menuDict[key_menu_completion]["--"+i]={}
         if self._register != None:
-            self._register(configDict=configDict,stDict=stDict)
-
+            args = {"configDict":configDict, "stDict":stDict, "settings":settings }
+            self._register(args)
 
     def runInMenu(self,objet,option=None,menuCompletion=None,pathEntry=None,style=None,tmpDir=None):
         if self._optionDebug != None:

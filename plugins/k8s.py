@@ -33,7 +33,9 @@ def startKubectl(path_file):
 
 
 
-def register(configDict,stDict):
+def register(args):
+    configDict=args["configDict"]
+    stDict=args["stDict"]
     stDict["--encrypt"]={}
     stDict["--encrypt"]["encryptable-kube"]=configDict[namePlugin]
 
@@ -43,7 +45,7 @@ def runInMenu(args):
 
 
 from plugins.Plugin import Plugin
-plugin=Plugin(namePlugin=namePlugin,demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="")
+plugin=Plugin(namePlugin=namePlugin,demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon=" ",titleIcon="")
 
 
 

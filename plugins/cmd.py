@@ -10,9 +10,10 @@ from prompt_toolkit.key_binding import KeyBindings
 demoDataYaml="""
 cmdDemoData:
   cmd:
-    ls:
+    cmd1:
       cmd: ls
-    coco:
+      tags: ["cmd","test"]
+    cmd2:
       cmd: echo "coco"
       prompt: yes
 """
@@ -24,7 +25,9 @@ def _(event):
 	event.app.exit()
 
 
-def register(configDict,stDict):
+def register(args):
+    stDict=args["stDict"]
+    configDict=args["configDict"]
     if "prompt" in configDict:
         stDict["prompt"]=configDict["prompt"]
 
@@ -38,7 +41,7 @@ def runInMenu(args):
 
 
 
-plugin=Plugin(namePlugin="cmd",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="")
+plugin=Plugin(namePlugin="cmd",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon=" ",titleIcon="")
 #pluginsActivated["cmd"]=plugin
 
 ##########

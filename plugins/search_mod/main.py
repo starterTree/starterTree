@@ -213,4 +213,4 @@ def runInMenu(args):
     getPromptSearch(path_entry_name_content=args["pathEntry"],style=args["style"])   
 
 from plugins.Plugin import Plugin,pluginsActivated
-plugin=Plugin(namePlugin="search",dataYaml=dataYaml,runInMenu=runInMenu,icon=" ",options=["debug"])
+plugin=Plugin(namePlugin="search",dataYaml=dataYaml,runInMenu=runInMenu,icon="⠀",titleIcon="",options=["debug"])
