@@ -125,7 +125,7 @@ class Plugin :
         #else:
         #    return self._getContentForRprompt(stDict)
 
-    def register(self,configDict,stDict,menuDict=None,key=None,menu=None,path=None,settings=None):
+    def register(self,configDict,stDict,menuDict=None,key=None,menu=None,path=None,settings=None,style=None):
         log={"name":self.namePlugin, "function":"register","configDict": configDict, "stDict":stDict,"menuDict":menuDict }
         icon=self.getIcon()
         if "icon" in configDict and detectNerdFont:
@@ -149,7 +149,7 @@ class Plugin :
         for i in self.options:
             menuDict[key_menu_completion]["--"+i]={}
         if self._register != None:
-            args = {"configDict":configDict, "stDict":stDict, "settings":settings, "completionDict":menuDict, "key_menu_completion":key_menu_completion, "completionDictElement": menuDict[key_menu_completion] }
+            args = {"configDict":configDict, "stDict":stDict, "settings":settings, "completionDict":menuDict, "key_menu_completion":key_menu_completion, "completionDictElement": menuDict[key_menu_completion], "style": style }
             self._register(args)
 
     def runInMenu(self,objet,option=None,menuCompletion=None,pathEntry=None,style=None,tmpDir=None):

@@ -99,9 +99,9 @@ def downloadFromUrl(url):
 
 
 def getIcon(icon,defaultIcon=""):
-    if detectNerdFont:
-        return icon
-    return defaultIcon
+	if detectNerdFont:
+		return icon
+	return defaultIcon
 
 
 #print(type(text))
@@ -156,7 +156,7 @@ def setNoneForValue(tab,values):
 	
 tmpDir=os.environ['HOME']+'/.starterTree/'
 if not os.path.exists(tmpDir):
-    os.mkdir(tmpDir)
+	os.mkdir(tmpDir)
 
 configDir=os.environ['HOME']+'/.config'
 try:
@@ -168,20 +168,29 @@ absolute_path_main_config_file=os.path.dirname(configFile)+"/"
 
 promptTitle=os.path.basename(sys.argv[0])
 if promptTitle == "starterTree.py":
-    promptTitle = ""
+	promptTitle = ""
 
-path_entry_name_content={}
-menu_completion={}
 
-def test():
-    return "a"
 
-from prompt_toolkit.application import get_app_or_none
 def main():
-    # charge data ( data yaml from plugins and data yaml file or data yaml plugins and data demo)
-    loadData(pluginsA,configFile,path_entry_name_content,menu_completion)
-    execMainPromptSession(tmpDir=tmpDir,promptTitle=promptTitle,bottomToolbar=getToolbar(pluginsA,path_entry_name_content),menu_completion=menu_completion)
-    #execMainPromptSession(tmpDir=tmpDir,promptTitle=promptTitle,bottomToolbar=getToolbar)
+	# charge data ( data yaml from plugins and data yaml file or data yaml plugins and data demo)
+	path_entry_name_content={}
+	menu_completion={}
+	style={}
+
+	path_entry_name_content, menu_completion, style = loadData(
+		pluginsA,
+		configFile,
+		path_entry_name_content,
+		menu_completion,
+		style=style)
+	execMainPromptSession(
+		tmpDir=tmpDir,
+		promptTitle=promptTitle,
+		bottomToolbar=getToolbar(pluginsA,path_entry_name_content),
+		menu_completion=menu_completion,
+		path_entry_name_content=path_entry_name_content,
+		plugins=pluginsA)
 
 
 
@@ -191,7 +200,7 @@ from rich import box
 
 
 if __name__ == "__main__":
-    #style=settings["theme"]
-    main()
+	#style=settings["theme"]
+	main()
 
 exit()

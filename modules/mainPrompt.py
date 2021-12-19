@@ -35,7 +35,7 @@ def _(event):
 	event.app.exit()
 
 
-def execMainPromptSession(tmpDir,promptTitle,style=None,bottomToolbar=None,menu_completion={}):
+def execMainPromptSession(tmpDir,promptTitle,style=None,bottomToolbar=None,menu_completion={},path_entry_name_content=None,plugins=None):
     completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
     history = FileHistory(tmpDir+".history_main")
     session = PromptSession(
@@ -59,20 +59,20 @@ def execMainPromptSession(tmpDir,promptTitle,style=None,bottomToolbar=None,menu_
     #    exit()
 
     prompt_id="path_"+prompt_id 
-    if  prompt_id in path_entry_name_content_cmd:
-        if "encryptable" in path_entry_name_content_cmd[prompt_id]:
-            os.system("cat "+tmpDir+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable"])+" | gpg -a --cipher-algo AES256 -c")			
-        if "encryptable-kube" in path_entry_name_content_cmd[prompt_id]:
-            os.system("cat "+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
+    #if  prompt_id in path_entry_name_content_cmd:
+    #    if "encryptable" in path_entry_name_content_cmd[prompt_id]:
+    #        os.system("cat "+tmpDir+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable"])+" | gpg -a --cipher-algo AES256 -c")			
+    #    if "encryptable-kube" in path_entry_name_content_cmd[prompt_id]:
+    #        os.system("cat "+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
 
-        if keyword_web_content in path_entry_name_content_cmd[prompt_id]:
-            modules.downloadWebContent.launch(path_entry_name_content=path_entry_name_content,prompt_id=prompt_id,keyword_web_content=keyword_web_content,tmpDir=tmpDir)
-            #downloadFromUrl(path_entry_name_content[prompt_id.replace("--pull","")][keyword_web_content])
-        if keyword_gitlab_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
-            downloadFromGitLabWithPromptToken(path_entry_name_content_cmd[prompt_id.replace("","")][keyword_gitlab_content_code_prompt_token])
-        if keyword_github_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
-            downloadFromGitHubWithPromptToken(path_entry_name_content_cmd[prompt_id.replace("","")][keyword_github_content_code_prompt_token])
-    exit()
+    #    if keyword_web_content in path_entry_name_content_cmd[prompt_id]:
+    #        modules.downloadWebContent.launch(path_entry_name_content=path_entry_name_content,prompt_id=prompt_id,keyword_web_content=keyword_web_content,tmpDir=tmpDir)
+    #        #downloadFromUrl(path_entry_name_content[prompt_id.replace("--pull","")][keyword_web_content])
+    #    if keyword_gitlab_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
+    #        downloadFromGitLabWithPromptToken(path_entry_name_content_cmd[prompt_id.replace("","")][keyword_gitlab_content_code_prompt_token])
+    #    if keyword_github_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
+    #        downloadFromGitHubWithPromptToken(path_entry_name_content_cmd[prompt_id.replace("","")][keyword_github_content_code_prompt_token])
+    #exit()
     #print(prompt_id)  
     option=None
     #print(len(prompt_id.split("--")))
@@ -81,10 +81,9 @@ def execMainPromptSession(tmpDir,promptTitle,style=None,bottomToolbar=None,menu_
     if  prompt_id in path_entry_name_content:
     #print(path_entry_name_content[prompt_id])
         text=prompt_id 
-        for i in plugins.Plugin.pluginsActivated:
-            if i in path_entry_name_content[prompt_id]:
-                plugins.Plugin.pluginsActivated[i].runInMenu(path_entry_name_content[prompt_id],option=option,menuCompletion=menu_completion,pathEntry=path_entry_name_content,style=style,tmpDir=tmpDir)
-
+        for p in (plugins):
+            if p.getName() in path_entry_name_content[prompt_id]: 
+                p.runInMenu(path_entry_name_content[prompt_id],option=option,menuCompletion=menu_completion,pathEntry=path_entry_name_content,style=style,tmpDir=tmpDir)
                 #with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
                 #	myfile.write(text+' # '+historyName+'\n')
 

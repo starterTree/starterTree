@@ -40,7 +40,7 @@ def getBottomToolbar(plugins,path_entry_name_content):
 ███████    ██    
      ██    ██    
 ███████    ██"""   
-	    grid.add_column(style="#444444")
+#	    grid.add_column(style="#444444")
 	    #grid.add_column(style="green on purple")
 	    grid.add_row("[bold  on red]"+text+"[/bold  on red]", result)
 	    #grid.add_row("[bold #444444 on red]"+text2+"[/bold #444444 on red]", "[bold magenta]COMPLETED [green]:heavy_check_mark:")
