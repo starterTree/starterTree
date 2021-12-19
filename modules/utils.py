@@ -35,40 +35,52 @@ def jinjaFile2yaml(jinjaFile):
 
 
 def my_fun(source_dict,menu_completion,path_entry_name_content,path_entry_name,path_entry_name_path,plugins,tab,settings):
-	for key in source_dict:
-		key=key.encode('ascii',errors='ignore').decode().replace(" ","⠀")
-		path_entry_name_content["path_"+path_entry_name+key]={}
+    for key in source_dict:
+        key=key.encode('ascii',errors='ignore').decode().replace(" ","⠀")
+        path_entry_name_content["path_"+path_entry_name+key]={}
 
-		icon=""
-		#cas specifique
-		if not isinstance(source_dict[key],dict):
-				#Register Plugins
-			if key in plugins:
-				plugins[key].register(configDict=source_dict,stDict=path_entry_name_content["path_"+path_entry_name+key],menuDict=menu_completion,key=key,menu=menu_completion,path=path_entry_name_path+"/",settings=settings)	
+        icon=""
+        #cas specifique
+        def register(p):
+            if p.getName() == key:
+                p.register(configDict=source_dict,stDict=path_entry_name_content["path_"+path_entry_name+key],menuDict=menu_completion,key=key,menu=menu_completion,path=path_entry_name_path+"/",settings=settings)	
 
-			
-		if isinstance(source_dict[key], dict):
-			if detectNerdFont: icon=""
-			if "icon" in source_dict[key] and detectNerdFont:
-				icon=source_dict[key]["icon"]
-			count=0
-			bad=0
-			sub_e=""
-			for sub in source_dict[key]:
-				if sub in plugins:
-					count=count+1
-					sub_e=sub
-				if isinstance(source_dict[key][sub],dict):
-					bad=1
-			#un sous dossier qui contient une seule entree classique
-			if bad == 0 and count == 1:
-				if sub_e in plugins:
-					plugins[sub_e].register(configDict=source_dict[key],stDict=path_entry_name_content["path_"+path_entry_name+key],menuDict=menu_completion,key=key,menu=menu_completion,path=path_entry_name_path+"/",settings=settings)	
-			
-			# alors cest un sous dossier
-			else:
-				key_menu_completion=(icon+key).replace(" ","⠀")
-				menu_completion[key_menu_completion]={}
-				menu_completion[key_menu_completion]["--list"]={}
-				my_fun(source_dict=source_dict[key], menu_completion=menu_completion[key_menu_completion] ,path_entry_name_content=path_entry_name_content ,path_entry_name=path_entry_name+key, path_entry_name_path=path_entry_name_path+"/"+key,plugins=plugins,tab=tab+"\t"+"\t",settings=settings)
+        if not isinstance(source_dict[key],dict):
+            #map(register,plugins)
+            #Register Plugins
+            #if key in plugins:
+                for p in (plugins):
+                    if p.getName() == key: 
+                        p.register(configDict=source_dict,stDict=path_entry_name_content["path_"+path_entry_name+key],menuDict=menu_completion,key=key,menu=menu_completion,path=path_entry_name_path+"/",settings=settings)	
+                    #plugins[key].register(configDict=source_dict,stDict=path_entry_name_content["path_"+path_entry_name+key],menuDict=menu_completion,key=key,menu=menu_completion,path=path_entry_name_path+"/",settings=settings)	
+
+                
+        if isinstance(source_dict[key], dict):
+            if detectNerdFont: icon=""
+            if "icon" in source_dict[key] and detectNerdFont:
+                icon=source_dict[key]["icon"]
+            count=0
+            bad=0
+            sub_e=""
+            for sub in source_dict[key]:
+                for p in (plugins):
+                    if p.getName() == sub: 
+                #if sub in plugins:
+                        count=count+1
+                        sub_e=sub
+                if isinstance(source_dict[key][sub],dict):
+                    bad=1
+            #un sous dossier qui contient une seule entree classique
+            if bad == 0 and count == 1:
+                #if sub_e in plugins:
+                #    plugins[sub_e].register(configDict=source_dict[key],stDict=path_entry_name_content["path_"+path_entry_name+key],menuDict=menu_completion,key=key,menu=menu_completion,path=path_entry_name_path+"/",settings=settings)	
+                for p in (plugins):
+                    if p.getName() == sub_e: 
+                        p.register(configDict=source_dict[key],stDict=path_entry_name_content["path_"+path_entry_name+key],menuDict=menu_completion,key=key,menu=menu_completion,path=path_entry_name_path+"/",settings=settings)	
+           # alors cest un sous dossier
+            else:
+                key_menu_completion=(icon+key).replace(" ","⠀")
+                menu_completion[key_menu_completion]={}
+                menu_completion[key_menu_completion]["--list"]={}
+                my_fun(source_dict=source_dict[key], menu_completion=menu_completion[key_menu_completion] ,path_entry_name_content=path_entry_name_content ,path_entry_name=path_entry_name+key, path_entry_name_path=path_entry_name_path+"/"+key,plugins=plugins,tab=tab+"\t"+"\t",settings=settings)
 

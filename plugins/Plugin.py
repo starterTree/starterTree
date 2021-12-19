@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 pluginsActivated={}
+pluginsA=[]
 
 from rich.panel import Panel
 from rich.pretty import pprint
@@ -82,6 +83,7 @@ class Plugin :
         self.options=options
         self._optionDebug=optionDebug
         pluginsActivated[self.namePlugin]=self
+        pluginsA.append(self)
 
 
 
@@ -93,6 +95,8 @@ class Plugin :
         return self.demoDataYaml
     def getDataYaml(self):
         return self.dataYaml
+    def getName(self):
+        return self.namePlugin
 
     def getIcon(self):
         return getIcon(self.icon)
@@ -145,7 +149,7 @@ class Plugin :
         for i in self.options:
             menuDict[key_menu_completion]["--"+i]={}
         if self._register != None:
-            args = {"configDict":configDict, "stDict":stDict, "settings":settings }
+            args = {"configDict":configDict, "stDict":stDict, "settings":settings, "completionDict":menuDict, "key_menu_completion":key_menu_completion, "completionDictElement": menuDict[key_menu_completion] }
             self._register(args)
 
     def runInMenu(self,objet,option=None,menuCompletion=None,pathEntry=None,style=None,tmpDir=None):
