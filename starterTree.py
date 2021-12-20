@@ -7,6 +7,8 @@
 # load Plugins
 
 from plugins.Plugin import pluginsA
+
+
 from modules.loadData import loadData
 from modules.mainPrompt import execMainPromptSession
 from modules.bottomToolbar import getBottomToolbar
@@ -178,11 +180,11 @@ def main():
 	menu_completion={}
 	style={}
 
-	path_entry_name_content, menu_completion, style = loadData(
-		pluginsA,
-		configFile,
-		path_entry_name_content,
-		menu_completion,
+	loadData(
+		plugins=pluginsA,
+		configFile=configFile,
+		path_entry_name_content=path_entry_name_content,
+		menu_completion=menu_completion,
 		style=style)
 	execMainPromptSession(
 		tmpDir=tmpDir,
@@ -190,7 +192,8 @@ def main():
 		bottomToolbar=getToolbar(pluginsA,path_entry_name_content),
 		menu_completion=menu_completion,
 		path_entry_name_content=path_entry_name_content,
-		plugins=pluginsA)
+		plugins=pluginsA,
+		style=style)
 
 
 

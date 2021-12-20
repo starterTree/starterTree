@@ -14,7 +14,7 @@ def jinjaFile2yaml(jinjaFile):
 
 
 # _plugins=plugins.Plugin.pluginsActivated
-def loadData(plugins, configFile, path_entry_name_content, menu_completion, style):
+def loadData(plugins, configFile, path_entry_name_content, menu_completion, style=None):
     dataDemo = {}
     dataYaml = {}
     menu_completion = menu_completion
@@ -23,7 +23,7 @@ def loadData(plugins, configFile, path_entry_name_content, menu_completion, styl
     for p in plugins:
         dataDemoModules = {}
         dataModules = {}
-
+        print(p.getName())
         dataDemoModules = yaml.load(
             p.getDemoDataYaml(),
             Loader=yaml.SafeLoader)

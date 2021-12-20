@@ -38,10 +38,11 @@ def _(event):
 def execMainPromptSession(tmpDir,promptTitle,style=None,bottomToolbar=None,menu_completion={},path_entry_name_content=None,plugins=None):
     completer =  FuzzyCompleter(NestedCompleter.from_nested_dict(menu_completion))
     history = FileHistory(tmpDir+".history_main")
+    styleMainPrompt=style["completionMenu"]
     session = PromptSession(
         mainPrompt(promptTitle),
         completer=completer, 
-        mouse_support=False,style=style,
+        mouse_support=False,style=styleMainPrompt,
         history=history, 
         complete_style=CompleteStyle.MULTI_COLUMN,
         key_bindings=bindings)
