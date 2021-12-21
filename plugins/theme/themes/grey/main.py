@@ -23,4 +23,4 @@ style = {
     , "PromptUser": 'fg="white" bg="#444444"'
 }
 
-theme = Theme("grey",style)
+theme = Theme("grey", style)

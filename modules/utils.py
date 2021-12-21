@@ -37,27 +37,26 @@ def jinjaFile2yaml(jinjaFile):
     return yaml.load(template.render(), Loader=yaml.SafeLoader)
 
 
-def my_fun(source_dict, menu_completion, path_entry_name_content, path_entry_name, path_entry_name_path, plugins, tab,
-           settings, style):
+def my_fun(source_dict, menu_completion, plugins, data, path_entry_name="", path_entry_name_path="",  tab="\t"):
     for key in source_dict:
         key = key.encode('ascii', errors='ignore').decode().replace(" ", "⠀")
-        path_entry_name_content["path_" + path_entry_name + key] = {}
+        data["path_entry_name_content"]["path_" + path_entry_name + key] = {}
 
         icon = ""
 
         def register(p):
             if p.getName() == key:
-                p.register(configDict=source_dict, stDict=path_entry_name_content["path_" + path_entry_name + key],
-                           menuDict=menu_completion, key=key, menu=menu_completion, path=path_entry_name_path + "/",
-                           settings=settings, style=style)
+                p.register(configDict=source_dict, stDict=data["path_entry_name_content"]["path_" + path_entry_name + key],
+                            key=key, menu=menu_completion, path=path_entry_name_path + "/",
+                           settings=data["settings"], style=data["style"])
 
         # cas specifique
         if not isinstance(source_dict[key], dict):
             for p in (plugins):
                 if p.getName() == key:
-                    p.register(configDict=source_dict, stDict=path_entry_name_content["path_" + path_entry_name + key],
-                               menuDict=menu_completion, key=key, menu=menu_completion, path=path_entry_name_path + "/",
-                               settings=settings, style=style)
+                    p.register(configDict=source_dict, stDict=data["path_entry_name_content"]["path_" + path_entry_name + key],
+                                key=key, menu=menu_completion, path=path_entry_name_path + "/",
+                               settings=data["settings"], style=data["style"])
 
         if isinstance(source_dict[key], dict):
             if detectNerdFont: icon = ""
@@ -78,9 +77,9 @@ def my_fun(source_dict, menu_completion, path_entry_name_content, path_entry_nam
                 for p in (plugins):
                     if p.getName() == sub_e:
                         p.register(configDict=source_dict[key],
-                                   stDict=path_entry_name_content["path_" + path_entry_name + key],
-                                   menuDict=menu_completion, key=key, menu=menu_completion,
-                                   path=path_entry_name_path + "/", settings=settings, style=style)
+                                   stDict=data["path_entry_name_content"]["path_" + path_entry_name + key],
+                                    key=key, menu=menu_completion,
+                                   path=path_entry_name_path + "/", settings=data["settings"], style=data["style"])
             # alors cest un sous dossier
             else:
                 key_menu_completion = (icon + key).replace(" ", "⠀")
@@ -89,12 +88,11 @@ def my_fun(source_dict, menu_completion, path_entry_name_content, path_entry_nam
                 my_fun(
                     source_dict=source_dict[key],
                     menu_completion=menu_completion[key_menu_completion],
-                    path_entry_name_content=path_entry_name_content,
                     path_entry_name=path_entry_name + key,
                     path_entry_name_path=path_entry_name_path + "/" + key,
                     plugins=plugins,
-                    tab=tab + "\t" + "\t",
-                    settings=settings,
-                    style=style)
+                    data=data,
+                    tab=tab + "\t" + "\t"
+                    )
 
-    return path_entry_name_content, menu_completion, style
+    return data, menu_completion

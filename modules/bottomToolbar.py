@@ -6,15 +6,15 @@ from prompt_toolkit import print_formatted_text, ANSI
 from rich.console import Console
 from rich.table import Table
 
-def get_content_for_rprompt(plugins,path_entry_name_content):
+def get_content_for_rprompt(data):
 	text=get_app_or_none().current_buffer.text.replace(" ","")
 	text=text.encode('ascii',errors='ignore').decode()
 	text='path_'+text
-	if text in path_entry_name_content:
+	if text in data["path_entry_name_content"]:
 		result=''
-		for i in plugins:
-			if i.getName() in path_entry_name_content[text]:
-				result=i.getContentForRprompt(stDict=path_entry_name_content[text])
+		for i in data["plugins"]:
+			if i.getName() in data["path_entry_name_content"][text]:
+				result=i.getContentForRprompt(stDict=data["path_entry_name_content"][text])
 
 		return result
 	else:
@@ -22,8 +22,8 @@ def get_content_for_rprompt(plugins,path_entry_name_content):
 
 
 
-def getBottomToolbar(plugins,path_entry_name_content):
-	result=get_content_for_rprompt(plugins,path_entry_name_content)	
+def getBottomToolbar(data):
+	result=get_content_for_rprompt(data)
 	console=Console()	
 	with console.capture() as capture:
 	    #grid =Table(expand=False, box=box.SQUARE,show_header=False,show_edge=False,padding=(0,0))
@@ -54,10 +54,10 @@ def getBottomToolbar(plugins,path_entry_name_content):
 
 
 
-def getToolbar(plugins,path_entry_name_content):
+def getToolbar(data):
 
     def tto():
-        return getBottomToolbar(plugins,path_entry_name_content)
+        return getBottomToolbar(data)
 
     return tto
 

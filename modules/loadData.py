@@ -14,13 +14,13 @@ def jinjaFile2yaml(jinjaFile):
 
 
 # _plugins=plugins.Plugin.pluginsActivated
-def loadData(plugins, configFile, path_entry_name_content, menu_completion, style=None):
+def loadData(configFile, data):
     dataDemo = {}
     dataYaml = {}
-    menu_completion = menu_completion
+    menu_completion = data["menu_completion"]
     settings = {}
 
-    for p in plugins:
+    for p in data["plugins"]:
         dataDemoModules = {}
         dataModules = {}
         print(p.getName())
@@ -35,27 +35,10 @@ def loadData(plugins, configFile, path_entry_name_content, menu_completion, styl
         dataDemo = {**dataDemo, **dataDemoModules}
 
     if os.getenv("ST_DEMO") == '1':
-        for data in [dataYaml, dataDemo]:
-            my_fun(
-                source_dict=data,
-                menu_completion=menu_completion,
-                path_entry_name_content=path_entry_name_content,
-                path_entry_name="",
-                path_entry_name_path="",
-                plugins=plugins, tab="\t",
-                settings=settings,
-                style=style)
+        for d in [dataYaml, dataDemo]:
+            my_fun(source_dict=d, menu_completion=data["menu_completion"], data=data, plugins=data["plugins"])
     else:
-        for data in [dataYaml, jinjaFile2yaml(configFile)]:
-            my_fun(
-                source_dict=data,
-                menu_completion=menu_completion,
-                path_entry_name_content=path_entry_name_content,
-                path_entry_name="",
-                path_entry_name_path="",
-                plugins=plugins,
-                tab="\t",
-                settings=settings,
-                style=style)
+        for d in [dataYaml, jinjaFile2yaml(configFile)]:
+            my_fun(source_dict=d, menu_completion=data["menu_completion"], data=data, plugins=data["plugins"])
 
-    return path_entry_name_content, menu_completion, style
+    return data, menu_completion

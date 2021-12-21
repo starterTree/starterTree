@@ -4,7 +4,6 @@ import os
 import rich
 from rich.console import Console
 from rich.panel import Panel
-from rich.pretty import pprint
 
 #voir toute la commane qui va etre executé
 
@@ -39,10 +38,8 @@ serversDemoData:
 
 
 def register(args):
-    configDict=args["configDict"]
-    stDict=args["stDict"]
-    if "message_rich" in configDict:
-        stDict["message_rich"]=configDict["message_rich"]
+    if "message_rich" in args["configDict"]:
+        args["stDict"]["message_rich"]=args["configDict"]["message_rich"]
 
         
 
@@ -56,8 +53,9 @@ def runInMenu(args):
 
 
 
-from plugins.Plugin import Plugin,pluginsActivated
-plugin=Plugin(namePlugin="ssh",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="⠀",titleIcon="",titleColor="red",options=["debug"])
+from Plugin import Plugin
+
+plugin=Plugin(namePlugin="ssh",demoDataYaml=demoDataYaml,afterRegister=register,runInMenu=runInMenu,icon="⠀",titleIcon="",titleColor="red",options=["debug"])
 
 
 

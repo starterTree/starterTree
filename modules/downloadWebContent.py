@@ -16,7 +16,6 @@ def getDemoData():
     return demoDataYaml
 
 # pre traitement
-# input path_entry_name_content_cmd path_entry_name keya subKey source_dict tmpDir
 def preLaunch(path_entry_name_content_cmd,path_entry_name,keya,key,source_dict,subKey,tmpDir,menu_completion):
 	if detectNerdFont: icon=""
 	#utils.encryptable(path_entry_name_content_cmd,path_entry_name,keya,key,source_dict,subKey)

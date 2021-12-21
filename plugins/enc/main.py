@@ -4,8 +4,10 @@ import os
 import rich
 from rich.console import Console
 from rich.panel import Panel
+from Plugin import Plugin
 
-demoDataYaml="""
+
+demoDataYaml = """
 encrypt:
   enc: 
 serversDemoData:
@@ -31,33 +33,29 @@ serversDemoData:
 """
 
 
-def register(configDict,stDict):
-    #if "message_rich" in configDict:
+def register(configDict, stDict):
+    # if "message_rich" in configDict:
     #    stDict["message_rich"]=configDict["message_rich"]
     pass
 
-def runInMenu(stDict):
 
-    ssh_cmd = "ssh "+stDict["ssh"]
+def runInMenu(stDict):
+    ssh_cmd = "ssh " + stDict["ssh"]
     if "message_rich" in stDict:
         rich.console
-        console=Console()
+        console = Console()
         console.print(Panel.fit(stDict["message_rich"]))
-    os.system(ssh_cmd)   
+    os.system(ssh_cmd)
 
 
 
-from plugins.Plugin import Plugin,pluginsActivated
-plugin=Plugin(namePlugin="enc",demoDataYaml=demoDataYaml,register=register,runInMenu=runInMenu,icon="")
-
-
+plugin = Plugin(namePlugin="enc", demoDataYaml=demoDataYaml, customRegister=register, runInMenu=runInMenu, icon="")
 
 ##########
-#code bin#
+# code bin#
 ##########
-					#path_entry_name_content["path_"+path_entry_name+keya]=source_dict[key]
+# path_entry_name_content["path_"+path_entry_name+keya]=source_dict[key]
 #					if len(source_dict[key][subKey].split("{{")) == 2 and len(source_dict[key][subKey].split("}}")) == 2:
 #						print(source_dict[key][subKey].split("{{")[1].split("}}")[0])
 #						path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey].replace("{{"+source_dict[key][subKey].split("{{")[1].split("}}")[0]+"}}" ,eval(source_dict[key][subKey].split("{{")[1].split("}}")[0]))
 #
-

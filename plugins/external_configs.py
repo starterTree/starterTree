@@ -53,7 +53,8 @@ def run_web_content_gitlab(args):
 def run_web_content_gihub(args):
     downloadFromUrl(args["objet"][namePlugin_web],args["tmpDir"])
 
-from plugins.Plugin import Plugin,pluginsActivated
+from Plugin import Plugin
+
 plugin=Plugin(namePlugin="gitlab_api_content_prompt_token",demoDataYaml=demoDataYaml,runInMenu=run_web_content_gitlab,icon="",options=["debug"])
 plugin=Plugin(namePlugin="github_api_content_prompt_token",demoDataYaml=demoDataYaml,runInMenu=run_web_content_github,icon="",options=["debug"])
 plugin=Plugin(namePlugin_web="web_content",demoDataYaml=demoDataYaml,runInMenu=run_web_content,icon="",options=["debug"])
