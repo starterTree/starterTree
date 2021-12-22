@@ -5,9 +5,9 @@ import rich
 from rich.console import Console
 from rich.panel import Panel
 
-#voir toute la commane qui va etre executé
+# voir toute la commane qui va etre executé
 
-demoDataYaml="""
+demoDataYaml = """
 set:
   starterTree_theme: grey
 serversDemoData:
@@ -39,23 +39,19 @@ serversDemoData:
 
 def register(args):
     if "message_rich" in args["configDict"]:
-        args["stDict"]["message_rich"]=args["configDict"]["message_rich"]
+        args["element"]["message_rich"] = args["configDict"]["message_rich"]
 
-        
 
 def runInMenu(args):
-    ssh_cmd = "ssh "+args["objet"]["ssh"]
+    ssh_cmd = "ssh " + args["objet"]["ssh"]
     if "message_rich" in args["objet"]:
         rich.console
-        console=Console()
+        console = Console()
         console.print(Panel.fit(args["objet"]["message_rich"]))
-    os.system(ssh_cmd)   
-
+    os.system(ssh_cmd)
 
 
 from Plugin import Plugin
 
-plugin=Plugin(namePlugin="ssh",demoDataYaml=demoDataYaml,afterRegister=register,runInMenu=runInMenu,icon="⠀",titleIcon="",titleColor="red",options=["debug"])
-
-
-
+plugin = Plugin(namePlugin="ssh", demoDataYaml=demoDataYaml, afterRegister=register, runInMenu=runInMenu, icon="⠀",
+                titleIcon="", titleColor="red", options=["debug"])

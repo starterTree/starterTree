@@ -21,14 +21,15 @@ def nerdFontIsPresent():
     return detectNerdFont
 
 
-def mainPrompt(title) -> HTML:
+def mainPrompt(data) -> HTML:
     icon = " >"
     # version=""
     version = "version is version"
     # str(datetime.datetime.now())
     if nerdFontIsPresent: icon = " "  # icon=getIcon(""," >")
     caseVersion = HTML('<aaa style="" fg="red" bg="#444444"> ' + str(version) + '</aaa>')
-    promptUser = HTML('<aaa style="" fg="white" bg="#444444"> ' + str(title + icon) + ' </aaa>')
+    if not data["config"]["displayVersion"]: caseVersion= ""
+    promptUser = HTML('<aaa style="" fg="white" bg="#444444"> ' + str(data["config"]["name"] + icon) + ' </aaa>')
     return merge_formatted_text([caseVersion, promptUser, " "])
 
 
@@ -44,9 +45,9 @@ def _(event):
 def execMainPromptSession(data, promptTitle, bottomToolbar=None, plugins=None):
     completer = FuzzyCompleter(NestedCompleter.from_nested_dict(data["menu_completion"]))
     history = FileHistory(data["tmpDir"] + ".history_main")
-    styleMainPrompt = data["style"]["completionMenu"]
+    styleMainPrompt = Style.from_dict(data["style"]["completionMenu"])
     session = PromptSession(
-        mainPrompt(promptTitle),
+        mainPrompt(data),
         completer=completer,
         mouse_support=False, style=styleMainPrompt,
         history=history,

@@ -5,19 +5,24 @@ from Plugin import Plugin
 from plugins.theme.Theme import themes
 
 dataYaml = """
-    "settings":
+    "theme":
+        "hide" : true
         "theme": "grey" 
 """
 demoDataYaml = """
-    "settings":
+    "theme":
+        "hide" : true
         "theme": "grey" 
+
 """
 
 
 def register(args):
     for t in themes:
         if t.name == args["configDict"]["theme"]:
-            args["style"] = t.getStyle
+            print('set theme')
+            print(args["configDict"])
+            args["data"]["style"] = t.getStyle()
 
 
 plugin = Plugin(namePlugin="theme", demoDataYaml=demoDataYaml, dataYaml=dataYaml, customRegister=register)

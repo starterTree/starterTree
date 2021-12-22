@@ -33,10 +33,6 @@ serversDemoData:
 """
 
 
-def register(configDict, stDict):
-    # if "message_rich" in configDict:
-    #    stDict["message_rich"]=configDict["message_rich"]
-    pass
 
 
 def runInMenu(stDict):
@@ -49,7 +45,7 @@ def runInMenu(stDict):
 
 
 
-plugin = Plugin(namePlugin="enc", demoDataYaml=demoDataYaml, customRegister=register, runInMenu=runInMenu, icon="")
+plugin = Plugin(namePlugin="enc", demoDataYaml=demoDataYaml,  runInMenu=runInMenu, icon="")
 
 ##########
 # code bin#

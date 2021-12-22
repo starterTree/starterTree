@@ -27,10 +27,8 @@ def _(event):
 
 
 def register(args):
-    stDict = args["stDict"]
-    configDict = args["configDict"]
-    if "prompt" in configDict:
-        stDict["prompt"] = configDict["prompt"]
+    if "prompt" in args["configDict"]:
+        args["element"]["prompt"] = args["configDict"]["prompt"]
 
 
 def runInMenu(args):
@@ -41,7 +39,7 @@ def runInMenu(args):
         os.system(cmd)
 
 
-plugin = Plugin(namePlugin="cmd", demoDataYaml=demoDataYaml, customRegister=register, runInMenu=runInMenu, icon=" ",
+plugin = Plugin(namePlugin="cmd", demoDataYaml=demoDataYaml, afterRegister=register, runInMenu=runInMenu, icon=" ",
                 titleIcon="")
 # pluginsActivated["cmd"]=plugin
 

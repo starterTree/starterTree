@@ -10,6 +10,7 @@ def get_content_for_rprompt(data):
 	text=get_app_or_none().current_buffer.text.replace(" ","")
 	text=text.encode('ascii',errors='ignore').decode()
 	text='path_'+text
+
 	if text in data["path_entry_name_content"]:
 		result=''
 		for i in data["plugins"]:

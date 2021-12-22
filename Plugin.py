@@ -37,30 +37,35 @@ def getIcon(icon, defaultIcon=""):
     return defaultIcon
 
 
-def defaultRegister(self, configDict, stDict, menuDict=None, key=None, menu=None, path=None, settings=None, style=None):
-    log = {"name": self.namePlugin, "function": "register", "configDict": configDict, "stDict": stDict,
-           "menuDict": menuDict}
+def defaultRegister(self, configDict, key=None, path=None, data=None, path_entry_name=None, menu_completion=None):
     icon = self.getIcon()
     if "icon" in configDict and detectNerdFont:
         icon = configDict["icon"]
+
     key_menu_completion = (icon + key).replace(" ", "⠀")
-    menu[key_menu_completion] = {}
+    menu_completion[key_menu_completion] = {}
 
-    stDict["path"] = path
-    stDict["name"] = key
+    data["path_entry_name_content"]["path_" + path_entry_name + key] = {
+        "path": path,
+        "name": key,
+        "type": self.namePlugin,
+        "content": configDict[self.namePlugin],
+        "description": configDict[self.namePlugin],
+        "tags": [],
+        self.namePlugin: configDict[self.namePlugin]
 
-    stDict["type"] = self.namePlugin
-    stDict["content"] = configDict[self.namePlugin]
-    stDict["description"] = configDict[self.namePlugin]
-    if "description" in configDict:
-        stDict["description"] = configDict["description"]
-    stDict["tags"] = []
-    if "tags" in configDict:
-        stDict["tags"] = configDict["tags"]
-    stDict[self.namePlugin] = configDict[self.namePlugin]
+    }
+
+    def overwrite(k):
+        if k in configDict:
+            data["path_entry_name_content"]["path_" + path_entry_name + key][k] = configDict[k]
+
+    overwrite("description")
+    overwrite("tags")
+
     # stDict=dict(configDict)
     for i in self.options:
-        menuDict[key_menu_completion]["--" + i] = {}
+        menu_completion[key_menu_completion]["--" + i] = {}
 
 
 def displayTags(tags):
@@ -161,19 +166,20 @@ class Plugin:
         # else:
         #    return self._getContentForRprompt(stDict)
 
-    def register(self, configDict, stDict, menuDict=None, key=None, menu=None, path=None, settings=None, style=None,
-                 key_menu_completion=None):
-        args = {"configDict": configDict, "stDict": stDict, "settings": settings, "completionDict": menuDict,
+    def register(self, configDict, key=None, path=None, data=None, path_entry_name=None,menu_completion=None):
+        data["path_entry_name_content"]["path_" + path_entry_name + key] = {}
+        args = {"configDict": configDict, "element": data["path_entry_name_content"]["path_" + path_entry_name + key],
                 "key_menu_completion": "key_menu_completion", "completionDictElement": "menuDict[key_menu_completion]",
-                "style": style}
+                "data": data}
         if self.customRegister is not None:
             self.customRegister(args)
         else:
-            defaultRegister(self, configDict, stDict, menuDict, key, menu, path, settings, style)
-            if self.customRegister is not None: self.customRegister(args)
+            defaultRegister(self, configDict=configDict, key=key, path=path, data=data,
+                            path_entry_name=path_entry_name,menu_completion=menu_completion)
+            if self.afterRegister is not None: self.afterRegister(args)
 
     def runInMenu(self, objet, data, option=None, pathEntry=None):
-        if self._optionDebug != None:
+        if self._optionDebug is not None:
             if option == "debug":
                 args = {"objet": objet}
                 self._optionDebug(args)

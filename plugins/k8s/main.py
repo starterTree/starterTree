@@ -34,10 +34,8 @@ def startKubectl(path_file):
 
 
 def register(args):
-    configDict = args["configDict"]
-    stDict = args["stDict"]
-    stDict["--encrypt"] = {}
-    stDict["--encrypt"]["encryptable-kube"] = configDict[namePlugin]
+    args["element"]["--encrypt"] = {}
+    args["element"]["--encrypt"]["encryptable-kube"] = args["configDict"][namePlugin]
 
 
 def runInMenu(args):

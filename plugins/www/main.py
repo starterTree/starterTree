@@ -20,14 +20,4 @@ def runInMenu(args):
 
 plugin = Plugin(namePlugin="www", demoDataYaml=demoDataYaml, runInMenu=runInMenu, icon=" ", titleIcon="",
                 titleColor="blue")
-# pluginsActivated["www"]=plugin
 
-
-##########
-# code bin#
-##########
-# path_entry_name_content["path_"+path_entry_name+keya]=source_dict[key]
-#					if len(source_dict[key][subKey].split("{{")) == 2 and len(source_dict[key][subKey].split("}}")) == 2:
-#						print(source_dict[key][subKey].split("{{")[1].split("}}")[0])
-#						path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey].replace("{{"+source_dict[key][subKey].split("{{")[1].split("}}")[0]+"}}" ,eval(source_dict[key][subKey].split("{{")[1].split("}}")[0]))
-#

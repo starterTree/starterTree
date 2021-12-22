@@ -8,9 +8,7 @@
 
 from Plugin import pluginsA
 
-from modules.loadData import loadData
-from modules.mainPrompt import execMainPromptSession
-from modules.bottomToolbar import getToolbar
+from modules import loadData, mainPrompt, bottomToolbar
 
 from sys import exit
 import os
@@ -26,8 +24,8 @@ from shlex import quote
 
 import modules.downloadWebContent
 
-# style=Style.from_dict(settings)
 
+# style=Style.from_dict(settings)
 
 
 def getIcon(icon, defaultIcon=""):
@@ -112,12 +110,17 @@ def main():
         "menu_completion": {},
         "style": {},
         "settings": {},
+        "config": {
+            "name" : "default",
+            "displayVersion": True,
+        },
         "tmpDir": tmpDir,
         "plugins": pluginsA
     }
 
-    loadData(configFile=configFile, data=starterTreeDATA)
-    execMainPromptSession(data=starterTreeDATA, promptTitle=promptTitle, bottomToolbar=getToolbar(starterTreeDATA["path_entry_name_content"]))
+    loadData.loadData(configFile=configFile, data=starterTreeDATA)
+    mainPrompt.execMainPromptSession(data=starterTreeDATA, promptTitle=promptTitle,
+                                     bottomToolbar=bottomToolbar.getToolbar(starterTreeDATA))
 
 
 if __name__ == "__main__":
