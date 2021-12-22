@@ -7,3 +7,4 @@ import plugins.ssh.main
 import plugins.theme.main
 import plugins.www.main
 import plugins.config.main
+import plugins.setting.main
