@@ -28,41 +28,27 @@ def preview(args):
     return(Columns(user_renderables))
 
 def getContentForRprompt(args):
-    if args["self"]._getContentForRprompt == None:
-        # return Panel("[bold #444444 on white]"+stDict["description"],border_style="bold #444444 on red")
-        # return "[bold #444444 on white]"+stDict["description"]
-        # return displayTags(stDict["tags"])
-        nameLeft = ""
-        for i in (args["self"].getTitleIcon() + args["element"]["type"].upper()):
-            # nameLeft=nameLeft+"[bold #444444 on white]"+i+""+"\n"
-            nameLeft = nameLeft + "[bold on white]" + i + "" + "\n"
-        grid = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
-        grid.add_column(style=args["self"].titleColor)
-        grid2 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
-        grid2.add_row("[bold #444444 on white]\n" + args["element"]["description"] + "\n")
-        # grid2.add_row(Markdown("# to "))
-        # grid2.add_row(Markdown("`bash` "))
-        grid2.add_row(Plugin.displayTags(args["element"]["tags"]))
-        grid3 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 0))
-        #grid3.add_row(Panel.fit(preview(args),title=args["self"].getTitleIcon(),style="bold on green"))
-        grid3.add_row(preview(args))
-        grid.add_row(nameLeft, grid2,Panel.fit(grid3,title=args["self"].getTitleIcon(),style="bold on green"))
-        #grid.add_row(nameLeft, grid2, grid3)
-
-        return grid
-
+    nameLeft = ""
+    for i in (args["self"].getTitleIcon() + args["element"]["type"].upper()):
+        nameLeft = nameLeft + "[bold on white]" + i + "" + "\n"
+    grid = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
+    grid.add_column(style=args["self"].titleColor)
+    grid2 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
+    grid2.add_row("[bold #444444 on white]\n" + args["element"]["description"] + "\n")
+    # grid2.add_row(Markdown("`bash` "))     # markdown is possible !
+    grid2.add_row(Plugin.displayTags(args["element"]["tags"]))
+    grid3 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 0))
+    #grid3.add_row(Panel.fit(preview(args),title=args["self"].getTitleIcon(),style="bold on green"))
+    grid3.add_row(preview(args))
+    grid.add_row(nameLeft, grid2,Panel.fit(grid3,title=args["self"].getTitleIcon(),style="bold on green"))
+    #grid.add_row(nameLeft, grid2, grid3)
+    return grid
 
 def register(args):
     icon = args["self"].getIcon()
     if "icon" in args["configDict"]:
         icon = args["configDict"]["icon"]
 
-    #icon = self.getIcon()
-    #if "icon" in configDict and detectNerdFont:
-    #    icon = configDict["icon"]
-
-    #key_menu_completion = (args["self"].getIcon() + args["key"]).replace(" ", "⠀")
-    #menu_completion[key_menu_completion] = {}
 
     key_menu_completion = (icon + args["key"]).replace(" ", "⠀")
     if "hide" not in args["configDict"]:
@@ -78,11 +64,12 @@ def register(args):
         "key_menu_completion": key_menu_completion,
         #"content": args["configDict"][args["self"].namePlugin],
         "tags": [],
-        "2preview": args["menu_completion"],
         "preview":args["menu_completion"],
         "description": "directory",
+        "titleIcon": args["self"].getTitleIcon()
     }
     args["element"]["preview"]="heho"
+    args["element"]["titleIcon"] = args["self"].getTitleIcon()
     menu={}
     if "hide" not in args["configDict"]:
         menu=args["menu_completion"][key_menu_completion]
@@ -128,5 +115,4 @@ def register(args):
 import Plugin
 
 
-plugin = Plugin.Plugin(namePlugin="dir",  icon=" ", customRegister=register, getCustomContentForRprompt=getContentForRprompt,
-                titleIcon="", options=["debug"])
+plugin = Plugin.Plugin(namePlugin="dir", icon=" ", customRegister=register, getCustomContentForRprompt=getContentForRprompt, titleIcon="", options=["debug"])

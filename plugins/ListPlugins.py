@@ -9,3 +9,4 @@ import plugins.www.main
 import plugins.setting.main
 import plugins.config.main
 import plugins.dir.main
+import plugins.external_config.main

@@ -3,7 +3,7 @@
 import os
 from prompt_toolkit.shortcuts import prompt
 
-from Plugin import Plugin
+import Plugin
 from prompt_toolkit.key_binding import KeyBindings
 
 demoDataYaml = """
@@ -39,15 +39,5 @@ def runInMenu(args):
         os.system(cmd)
 
 
-plugin = Plugin(namePlugin="cmd", demoDataYaml=demoDataYaml, afterRegister=register, runInMenu=runInMenu, icon=" ",
+plugin = Plugin.Plugin(namePlugin="cmd", demoDataYaml=demoDataYaml, afterRegister=register, runInMenu=runInMenu, icon=" ",
                 titleIcon="")
-# pluginsActivated["cmd"]=plugin
-
-##########
-# code bin#
-##########
-# path_entry_name_content["path_"+path_entry_name+keya]=source_dict[key]
-#					if len(source_dict[key][subKey].split("{{")) == 2 and len(source_dict[key][subKey].split("}}")) == 2:
-#						print(source_dict[key][subKey].split("{{")[1].split("}}")[0])
-#						path_entry_name_content["path_"+path_entry_name+keya][subKey]=source_dict[key][subKey].replace("{{"+source_dict[key][subKey].split("{{")[1].split("}}")[0]+"}}" ,eval(source_dict[key][subKey].split("{{")[1].split("}}")[0]))
-#

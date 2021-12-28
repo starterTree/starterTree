@@ -28,7 +28,10 @@ def downloadFromUrl(url,tmpDir):
     r = requests.get(url)
     writeConfig(tmpDir+os.path.basename(url),r.text)
 
-
+demoDataYaml="""
+demo_web_content:
+  web_content: 
+"""
 
 
 #					path_entry_name_content["path_"+path_entry_name+keya]["content"]=source_dict[key][subKey]
@@ -45,16 +48,16 @@ def downloadFromUrl(url,tmpDir):
 #					menu_completion[icon+key]={}
 
 def run_web_content(args):
-    downloadFromUrl(args["objet"][namePlugin_web],args["tmpDir"])
+    downloadFromUrl(args["objet"]["gitlab_api_content_prompt_token"],args["tmpDir"])
 
 def run_web_content_gitlab(args):
-    downloadFromUrl(args["objet"][namePlugin_web],args["tmpDir"])
+    downloadFromUrl(args["objet"]["github_api_content_prompt_token"],args["tmpDir"])
 
-def run_web_content_gihub(args):
-    downloadFromUrl(args["objet"][namePlugin_web],args["tmpDir"])
+def run_web_content_github(args):
+    downloadFromUrl(args["objet"]["web_content"],args["tmpDir"])
 
-from Plugin import Plugin
+import Plugin
 
-plugin=Plugin(namePlugin="gitlab_api_content_prompt_token",demoDataYaml=demoDataYaml,runInMenu=run_web_content_gitlab,icon="",options=["debug"])
-plugin=Plugin(namePlugin="github_api_content_prompt_token",demoDataYaml=demoDataYaml,runInMenu=run_web_content_github,icon="",options=["debug"])
-plugin=Plugin(namePlugin_web="web_content",demoDataYaml=demoDataYaml,runInMenu=run_web_content,icon="",options=["debug"])
+plugin=Plugin.Plugin(namePlugin="gitlab_api_content_prompt_token",demoDataYaml=demoDataYaml,customRegister=run_web_content_gitlab,icon="",options=["debug"])
+plugin=Plugin.Plugin(namePlugin="github_api_content_prompt_token",demoDataYaml=demoDataYaml,customRegister=run_web_content_github,icon="",options=["debug"])
+plugin=Plugin.Plugin(namePlugin="web_content",demoDataYaml=demoDataYaml,customRegister=run_web_content,icon="",options=["debug"])

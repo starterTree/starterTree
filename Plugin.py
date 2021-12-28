@@ -36,23 +36,6 @@ def getIcon(icon, defaultIcon=""):
         return icon
     return defaultIcon
 
-def getDefaultContentForRprompt(args):
-    # return Panel("[bold #444444 on white]"+stDict["description"],border_style="bold #444444 on red")
-    # return "[bold #444444 on white]"+stDict["description"]
-    # return displayTags(stDict["tags"])
-    nameLeft = ""
-    for i in (args["self"].getTitleIcon() + args["element"]["type"].upper()):
-        # nameLeft=nameLeft+"[bold #444444 on white]"+i+""+"\n"
-        nameLeft = nameLeft + "[bold on white]" + i + "" + "\n"
-    grid = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
-    grid.add_column(style=args["self"].titleColor)
-    grid2 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
-    grid2.add_row("[bold #444444 on white]\n" + args["element"]["description"] + "\n")
-    # grid2.add_row(Markdown("# to "))
-    # grid2.add_row(Markdown("`bash` "))
-    grid2.add_row(displayTags(args["element"]["tags"]))
-    grid.add_row(nameLeft, grid2)
-    return grid
 
 def defaultRegister(args):
     icon = args["self"].getIcon()
@@ -163,13 +146,26 @@ class Plugin:
     def getTitleIcon(self):
         return getIcon(self.titleIcon)
 
+    def getDefaultContentForRprompt(self,args):
+        nameLeft = ""
+        for i in (args["element"]["titleIcon"] + args["element"]["type"].upper()):
+            nameLeft = nameLeft + "[bold on white]" + i + "" + "\n"
+        grid = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
+        grid.add_column(style=args["self"].titleColor)
+        grid2 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
+        grid2.add_row("[bold #444444 on white]\n" + args["element"]["description"] + "\n")
+        # markdown is possible grid2.add_row(Markdown("`bash` "))
+        grid2.add_row(displayTags(args["element"]["tags"]))
+        grid.add_row(nameLeft, grid2)
+        return grid
+
     def getContentForRprompt(self, element):
         args = {"element": element, "self": self}
 
         if self.getCustomContentForRprompt is not None:
             return(self.getCustomContentForRprompt(args))
         else:
-            return(getDefaultContentForRprompt(args))
+            return(self.getDefaultContentForRprompt(args))
 
 
     def register(self, configDict, key=None, path=None, data=None, path_entry_name=None,menu_completion=None, tab=""):
@@ -183,8 +179,10 @@ class Plugin:
                 "path":path,
                 "path_entry_name":path_entry_name,
                 "menu_completion": menu_completion,
+                "titleIcon": self.getTitleIcon(),
                 "self": self ,
                 "tab": tab}
+        data["path_entry_name_content"]["path_" + path_entry_name + key]["titleIcon"]=self.getTitleIcon()
         if self.customRegister is not None:
             self.customRegister(args)
         else:
@@ -198,7 +196,7 @@ class Plugin:
                 args = {"objet": objet}
                 self._optionDebug(args)
                 exit()
-        args = {"objet": objet, "option": option, "menuCompletion": data["menuCompletion"], "pathEntry": pathEntry,
+        args = {"objet": objet, "option": option, "menuCompletion": data["menu_completion"], "pathEntry": pathEntry,
                 "style": data["style"], "tmpDir": data["tmpDir"]}
         self._runInMenu(args)
 

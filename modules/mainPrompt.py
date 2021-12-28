@@ -91,7 +91,7 @@ def execMainPromptSession(data, promptTitle, bottomToolbar=None, plugins=None):
         text = prompt_id
         for p in (data["plugins"]):
             if p.getName() in data["path_entry_name_content"][prompt_id]:
-                p.runInMenu(data["path_entry_name_content"][prompt_id], option=option, pathEntry=data["path_entry_name_content"])
+                p.runInMenu(data["path_entry_name_content"][prompt_id], data=data, option=option, pathEntry=data["path_entry_name_content"])
                 # with open(os.environ['HOME']+"/.bash_history", "a") as myfile:
                 #	myfile.write(text+' # '+historyName+'\n')
 
