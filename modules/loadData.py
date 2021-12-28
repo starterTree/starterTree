@@ -5,6 +5,8 @@ import yaml
 import os
 from jinja2 import Template
 from modules.utils import my_fun
+import logging
+logging.basicConfig(filename='/tmp/st.log', level=logging.DEBUG)
 
 
 def jinjaFile2yaml(jinjaFile):
@@ -35,9 +37,11 @@ def loadData(configFile, data):
         dataDemo = {**dataDemo, **dataDemoModules}
 
     if os.getenv("ST_DEMO") == '1':
+        logging.debug("loadDemo")
         for d in [dataYaml, dataDemo]:
             my_fun(source_dict=d, menu_completion=data["menu_completion"], data=data, plugins=data["plugins"])
     else:
+        logging.debug("load real data")
         for d in [dataYaml, jinjaFile2yaml(configFile)]:
             my_fun(source_dict=d, menu_completion=data["menu_completion"], data=data, plugins=data["plugins"])
 

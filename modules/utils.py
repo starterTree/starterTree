@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 import os
 
-keyword_file_content_relative = "file_content_relative"
-keyword_web_content = "web_content"
-keyword_gitlab_content_code_prompt_token = "gitlab_api_content_prompt_token"
-keyword_github_content_code_prompt_token = "github_api_content_prompt_token"
-www_module_keyword = "www"
-ssh_module_keyword = "ssh"
+
+
+import logging
+logging.basicConfig(filename='/tmp/st.log', level=logging.DEBUG)
+
 
 from rich.pretty import pprint
 import yaml
@@ -37,11 +36,27 @@ def jinjaFile2yaml(jinjaFile):
     return yaml.load(template.render(), Loader=yaml.SafeLoader)
 
 
+def detectIfoneSubEntry(source_dict,key,plugins):
+    count = 0
+    bad = 0
+    sub_e = ""
+    for sub in source_dict[key]:
+        for p in (plugins):
+
+            if p.getName() == sub:
+                count = count + 1
+                sub_e = sub
+        if isinstance(source_dict[key][sub], dict):
+            bad = 1
+    if bad == 0 and count == 1:
+        return sub_e
+    else: return None
+
 def my_fun(source_dict, menu_completion, plugins, data, path_entry_name="", path_entry_name_path="", tab="\t"):
     for key in source_dict:
+        logging.debug("myFun: " + str(key) + " " )
         key = key.encode('ascii', errors='ignore').decode().replace(" ", "⠀")
         data["path_entry_name_content"]["path_" + path_entry_name + key] = {}
-
         icon = ""
 
         def register(p):
@@ -49,48 +64,43 @@ def my_fun(source_dict, menu_completion, plugins, data, path_entry_name="", path
                 p.register(configDict=source_dict, menu_completion=menu_completion, key=key, path_entry_name=path_entry_name, data=data, path=path_entry_name_path + "/")
 
         # cas specifique
+        # si cest une feuille
         if not isinstance(source_dict[key], dict):
+            logging.debug("detect leaff: "+str(key)+": "+str(source_dict[key]))
             for p in (plugins):
                 if p.getName() == key:
+                    logging.debug("register "+p.getName())
                     p.register(configDict=source_dict, menu_completion=menu_completion, path_entry_name=path_entry_name, key=key, path=path_entry_name_path + "/", data=data)
 
+        # si c'est unre branche
         if isinstance(source_dict[key], dict):
-            if detectNerdFont: icon = ""
+            logging.debug("detect branch: " + str(key) + " " + str(source_dict[key]))
+            if detectNerdFont: icon = " "
             if "icon" in source_dict[key] and detectNerdFont:
                 icon = source_dict[key]["icon"]
-            count = 0
-            bad = 0
-            sub_e = ""
-            for sub in source_dict[key]:
-                for p in (plugins):
 
-                    if p.getName() == sub:
-                        count = count + 1
-                        sub_e = sub
-                if isinstance(source_dict[key][sub], dict):
-                    bad = 1
+            #  si cest une branche qui contient une seule feuille
             # un sous dossier qui contient une seule entree classique
-            if bad == 0 and count == 1:
+            cond=detectIfoneSubEntry(source_dict,key,plugins)
+            if cond is not None:
+                logging.debug("detect branch with one leaf: " + str(key) + " " + str(source_dict[key]))
                 for p in (plugins):
-                    if p.getName() == sub_e:
-                        print("a", p.getName())
+                    if p.getName() == cond:
+                        logging.debug("register " + p.getName())
                         p.register(configDict=source_dict[key], menu_completion=menu_completion, key=key, data=data, path=path_entry_name_path + "/", path_entry_name=path_entry_name)
             # alors cest un sous dossier
+            # si cest une branche qui contient plusieurs feuilles
             else:
-                key_menu_completion = (icon + key).replace(" ", "⠀")
+                logging.debug("detect branch with multiple leaf: " +str(key) + " " + str(source_dict[key]))
+                #key_menu_completion = (icon + key).replace(" ", "⠀")
+
                 menu=None
+                for p in (plugins):
+                    if p.getName() == "dir":
+                        logging.debug("register "+p.getName())
+                        p.register(configDict=source_dict[key], menu_completion=menu_completion, key=key, data=data, path=path_entry_name_path + "/", path_entry_name=path_entry_name,tab=tab + "\t" + "\t")
                 if "hide" not in source_dict[key]:
-                    menu_completion[key_menu_completion] = {}
-                    menu_completion[key_menu_completion]["--list"] = {}
-                    menu=menu_completion[key_menu_completion]
-                my_fun(
-                    source_dict=source_dict[key],
-                    menu_completion=menu,
-                    path_entry_name=path_entry_name + key,
-                    path_entry_name_path=path_entry_name_path + "/" + key,
-                    plugins=plugins,
-                    data=data,
-                    tab=tab + "\t" + "\t"
-                )
+                     pass
+
 
     return data, menu_completion

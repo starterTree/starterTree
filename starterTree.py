@@ -21,6 +21,8 @@ from shlex import quote
 # import base64
 # import paramiko
 # import colorama
+from rich.pretty import pprint
+
 
 import modules.downloadWebContent
 
@@ -108,7 +110,9 @@ def main():
     starterTreeDATA = {
         "path_entry_name_content": {},
         "menu_completion": {},
-        "style": {},
+        "style": {
+            "completionMenu": {}
+        },
         "settings": {},
         "config": {
             "name" : "default",
@@ -118,7 +122,13 @@ def main():
         "plugins": pluginsA
     }
 
+    import logging
+    logging.basicConfig(filename='/tmp/st.log', level=logging.DEBUG, filemode='w')
+
+    logging.debug("loadData(configFile="+str(configFile)+", data="+str(starterTreeDATA))
     loadData.loadData(configFile=configFile, data=starterTreeDATA)
+    pprint(starterTreeDATA["menu_completion"])
+    logging.debug("execMainPromptSession(data=" + str(starterTreeDATA) + ", promptTitle=" + str(promptTitle))
     mainPrompt.execMainPromptSession(data=starterTreeDATA, promptTitle=promptTitle,
                                      bottomToolbar=bottomToolbar.getToolbar(starterTreeDATA))
 

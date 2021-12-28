@@ -36,36 +36,54 @@ def getIcon(icon, defaultIcon=""):
         return icon
     return defaultIcon
 
+def getDefaultContentForRprompt(args):
+    # return Panel("[bold #444444 on white]"+stDict["description"],border_style="bold #444444 on red")
+    # return "[bold #444444 on white]"+stDict["description"]
+    # return displayTags(stDict["tags"])
+    nameLeft = ""
+    for i in (args["self"].getTitleIcon() + args["element"]["type"].upper()):
+        # nameLeft=nameLeft+"[bold #444444 on white]"+i+""+"\n"
+        nameLeft = nameLeft + "[bold on white]" + i + "" + "\n"
+    grid = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
+    grid.add_column(style=args["self"].titleColor)
+    grid2 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
+    grid2.add_row("[bold #444444 on white]\n" + args["element"]["description"] + "\n")
+    # grid2.add_row(Markdown("# to "))
+    # grid2.add_row(Markdown("`bash` "))
+    grid2.add_row(displayTags(args["element"]["tags"]))
+    grid.add_row(nameLeft, grid2)
+    return grid
 
-def defaultRegister(self, configDict, key=None, path=None, data=None, path_entry_name=None, menu_completion=None):
-    icon = self.getIcon()
-    if "icon" in configDict and detectNerdFont:
-        icon = configDict["icon"]
+def defaultRegister(args):
+    icon = args["self"].getIcon()
+    if "icon" in args["configDict"] and detectNerdFont:
+        icon = args["configDict"]["icon"]
 
-    key_menu_completion = (icon + key).replace(" ", "⠀")
-    menu_completion[key_menu_completion] = {}
+    key_menu_completion = (icon + args["key"]).replace(" ", "⠀")
+    args["menu_completion"][key_menu_completion] = {}
 
-    data["path_entry_name_content"]["path_" + path_entry_name + key] = {
-        "path": path,
-        "name": key,
-        "type": self.namePlugin,
-        "content": configDict[self.namePlugin],
-        "description": configDict[self.namePlugin],
+    args["data"]["path_entry_name_content"]["path_" + args["path_entry_name"] + args["key"]] = {
+        "path": args["path"],
+        "titleIcon" : args["self"].getTitleIcon(),
+        "name": args["key"],
+        "type": args["self"].namePlugin,
+        "content": args["configDict"][args["self"].namePlugin],
+        "description": args["configDict"][args["self"].namePlugin],
         "tags": [],
-        self.namePlugin: configDict[self.namePlugin]
+        args["self"].namePlugin: args["configDict"][args["self"].namePlugin]
 
     }
 
     def overwrite(k):
-        if k in configDict:
-            data["path_entry_name_content"]["path_" + path_entry_name + key][k] = configDict[k]
+        if k in args["configDict"]:
+            args["data"]["path_entry_name_content"]["path_" + args["path_entry_name"] + args["key"]][k] = args["configDict"][k]
 
     overwrite("description")
     overwrite("tags")
 
     # stDict=dict(configDict)
-    for i in self.options:
-        menu_completion[key_menu_completion]["--" + i] = {}
+    for i in args["self"].options:
+        args["menu_completion"][key_menu_completion]["--" + i] = {}
 
 
 def displayTags(tags):
@@ -109,7 +127,7 @@ class Plugin:
 
     def __init__(self, namePlugin="foo", demoDataYaml="{}", icon="", titleIcon="", titleColor="#666666", dataYaml="{}",
                  customRegister=None, afterRegister=None, runInMenu=dummyRunInMenu, getContentForRprompt=None,
-                 options=[],
+                 options=[], getCustomContentForRprompt=None,
                  optionDebug=optionDebug):
         self.namePlugin = namePlugin
         self.demoDataYaml = demoDataYaml
@@ -119,6 +137,7 @@ class Plugin:
         self.titleColor = titleColor
         self.customRegister = customRegister
         self.afterRegister = afterRegister
+        self.getCustomContentForRprompt = getCustomContentForRprompt
         self._runInMenu = runInMenu
         self._getContentForRprompt = getContentForRprompt
         self.options = options
@@ -142,41 +161,36 @@ class Plugin:
         return getIcon(self.icon)
 
     def getTitleIcon(self):
-        return self.titleIcon
+        return getIcon(self.titleIcon)
 
-    def getContentForRprompt(self, stDict):
-        if self._getContentForRprompt == None:
-            # return Panel("[bold #444444 on white]"+stDict["description"],border_style="bold #444444 on red")
-            # return "[bold #444444 on white]"+stDict["description"]
-            # return displayTags(stDict["tags"])
-            nameLeft = ""
-            for i in (self.getTitleIcon() + stDict["type"].upper()):
-                # nameLeft=nameLeft+"[bold #444444 on white]"+i+""+"\n"
-                nameLeft = nameLeft + "[bold on white]" + i + "" + "\n"
-            grid = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
-            grid.add_column(style=self.titleColor)
-            grid2 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
-            grid2.add_row("[bold #444444 on white]\n" + stDict["description"] + "\n")
-            # grid2.add_row(Markdown("# to "))
-            # grid2.add_row(Markdown("`bash` "))
-            grid2.add_row(displayTags(stDict["tags"]))
-            grid.add_row(nameLeft, grid2)
-            return grid
+    def getContentForRprompt(self, element):
+        args = {"element": element, "self": self}
 
-        # else:
-        #    return self._getContentForRprompt(stDict)
+        if self.getCustomContentForRprompt is not None:
+            return(self.getCustomContentForRprompt(args))
+        else:
+            return(getDefaultContentForRprompt(args))
 
-    def register(self, configDict, key=None, path=None, data=None, path_entry_name=None,menu_completion=None):
+
+    def register(self, configDict, key=None, path=None, data=None, path_entry_name=None,menu_completion=None, tab=""):
         data["path_entry_name_content"]["path_" + path_entry_name + key] = {}
-        args = {"configDict": configDict, "element": data["path_entry_name_content"]["path_" + path_entry_name + key],
-                "key_menu_completion": "key_menu_completion", "completionDictElement": "menuDict[key_menu_completion]",
-                "data": data}
+        args = {"configDict": configDict,
+                "element": data["path_entry_name_content"]["path_" + path_entry_name + key],
+                "key_menu_completion": "key_menu_completion",
+                "completionDictElement": "menuDict[key_menu_completion]",
+                "data": data,
+                "key":key,
+                "path":path,
+                "path_entry_name":path_entry_name,
+                "menu_completion": menu_completion,
+                "self": self ,
+                "tab": tab}
         if self.customRegister is not None:
             self.customRegister(args)
         else:
-            defaultRegister(self, configDict=configDict, key=key, path=path, data=data,
-                            path_entry_name=path_entry_name,menu_completion=menu_completion)
-            if self.afterRegister is not None: self.afterRegister(args)
+            defaultRegister(args)
+            if self.afterRegister is not None:
+                self.afterRegister(args)
 
     def runInMenu(self, objet, data, option=None, pathEntry=None):
         if self._optionDebug is not None:

@@ -14,7 +14,8 @@ dataYaml = """
 demoDataYaml = """
     "configDemoData":
         "hide" : "true"
-        "name": "demo" 
+        changeNameTest:
+            "name": "demoo" 
         "displayVersion": True
         "description": "configSetting demo"
         
