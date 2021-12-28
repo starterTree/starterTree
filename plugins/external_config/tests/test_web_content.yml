@@ -1,0 +1,5 @@
+web_content_cmd:
+  cmd1:
+    cmd: ls
+  cmd2:
+    cmd: ls -lrt
