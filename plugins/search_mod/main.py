@@ -7,7 +7,11 @@ from prompt_toolkit.key_binding import KeyBindings
 from modules.output.rich import Tableau as Tableau
 from prompt_toolkit.history import FileHistory
 import os
+import re
 from .output_rich import Tableau as Tableau
+from prompt_toolkit.styles import Style
+
+
 
 tmpDir = os.environ['HOME'] + '/.starterTree/'
 if not os.path.exists(tmpDir):
@@ -74,20 +78,20 @@ def getPromptSearch(path_entry_name_content, default_promptSearch="all", style=N
     icon = " search >"
     if detectNerdFont: icon = " "
     history = FileHistory(tmpDir + ".history_search")
-    session = PromptSession(icon + " ", completer=completer, style=style, key_bindings=bindings, history=history)
+    session = PromptSession(icon + " ", completer=completer, style=Style.from_dict(style), key_bindings=bindings, history=history)
     # prompt= session.prompt(pre_run=session.default_buffer.start_completion,default=default_promptSearch,rprompt=get_rprompt).replace('"','')
     try:
         prompt = session.prompt(default=default_promptSearch).replace('"', '')
     except:
         exit()
     prompt = prompt.encode('ascii', errors='ignore').decode()
-    prompt_and_default = "not type=system_st AND not type=settings display=type,tags,description  " + prompt
+    prompt_and_default = "not type=system_st AND not type=settings AND not type=dir not type=github_api_content_prompt_token not type=gitlab_api_content_prompt_token not type=setting not type=search not type=web_content AND display=type,tags,description  " + prompt
     if prompt == "":
         prompt = "all"
     if prompt[0:5] == "debug":
         prompt_and_default = "display=type,tags,description  " + prompt
     if prompt[0:6] == "config":
-        prompt_and_default = "display=type,tags,description AND type=settings " + prompt
+        prompt_and_default = "display=type,tags,description AND type=setting " + prompt
     result = []
     tableau_keys = {}
     for i in prompt_and_default.split(" "):
@@ -224,7 +228,7 @@ search:
 
 
 def runInMenu(args):
-    getPromptSearch(path_entry_name_content=args["pathEntry"], style=args["style"])
+    getPromptSearch(path_entry_name_content=args["pathEntry"], style=args["data"]["style"]["completionMenu"])
 
 
 from Plugin import Plugin

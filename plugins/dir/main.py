@@ -61,6 +61,7 @@ def register(args):
         "path": args["path"],
         "name": args["key"],
         "type": args["self"].namePlugin,
+        "title": args["self"].title,
         "key_menu_completion": key_menu_completion,
         #"content": args["configDict"][args["self"].namePlugin],
         "tags": [],

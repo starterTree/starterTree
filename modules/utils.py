@@ -61,7 +61,7 @@ def my_fun(source_dict, menu_completion, plugins, data, path_entry_name="", path
 
         def register(p):
             if p.getName() == key:
-                p.register(configDict=source_dict, menu_completion=menu_completion, key=key, path_entry_name=path_entry_name, data=data, path=path_entry_name_path + "/")
+                p.register(configDict=source_dict, menu_completion=menu_completion, key=key, path_entry_name=path_entry_name, data=data, path=path_entry_name_path + "/",tmpDir=tmpDir)
 
         # cas specifique
         # si cest une feuille
@@ -70,7 +70,7 @@ def my_fun(source_dict, menu_completion, plugins, data, path_entry_name="", path
             for p in (plugins):
                 if p.getName() == key:
                     logging.debug("register "+p.getName())
-                    p.register(configDict=source_dict, menu_completion=menu_completion, path_entry_name=path_entry_name, key=key, path=path_entry_name_path + "/", data=data)
+                    p.register(configDict=source_dict, menu_completion=menu_completion, path_entry_name=path_entry_name, key=key, path=path_entry_name_path + "/", data=data,tmpDir=tmpDir)
 
         # si c'est unre branche
         if isinstance(source_dict[key], dict):
@@ -87,7 +87,7 @@ def my_fun(source_dict, menu_completion, plugins, data, path_entry_name="", path
                 for p in (plugins):
                     if p.getName() == cond:
                         logging.debug("register " + p.getName())
-                        p.register(configDict=source_dict[key], menu_completion=menu_completion, key=key, data=data, path=path_entry_name_path + "/", path_entry_name=path_entry_name)
+                        p.register(configDict=source_dict[key], menu_completion=menu_completion, key=key, data=data, path=path_entry_name_path + "/", path_entry_name=path_entry_name,tmpDir=tmpDir)
             # alors cest un sous dossier
             # si cest une branche qui contient plusieurs feuilles
             else:
@@ -98,7 +98,7 @@ def my_fun(source_dict, menu_completion, plugins, data, path_entry_name="", path
                 for p in (plugins):
                     if p.getName() == "dir":
                         logging.debug("register "+p.getName())
-                        p.register(configDict=source_dict[key], menu_completion=menu_completion, key=key, data=data, path=path_entry_name_path + "/", path_entry_name=path_entry_name,tab=tab + "\t" + "\t")
+                        p.register(configDict=source_dict[key], menu_completion=menu_completion, key=key, data=data, path=path_entry_name_path + "/", path_entry_name=path_entry_name,tab=tab + "\t" + "\t",tmpDir=tmpDir)
                 if "hide" not in source_dict[key]:
                      pass
 

@@ -48,11 +48,15 @@ def defaultRegister(args):
     args["data"]["path_entry_name_content"]["path_" + args["path_entry_name"] + args["key"]] = {
         "path": args["path"],
         "titleIcon" : args["self"].getTitleIcon(),
+        "title": args["self"].title,
         "name": args["key"],
         "type": args["self"].namePlugin,
+        "key_menu_completion": key_menu_completion,
+        "preview": args["preview"],
         "content": args["configDict"][args["self"].namePlugin],
         "description": args["configDict"][args["self"].namePlugin],
         "tags": [],
+        "self": args["self"],
         args["self"].namePlugin: args["configDict"][args["self"].namePlugin]
 
     }
@@ -110,12 +114,16 @@ class Plugin:
 
     def __init__(self, namePlugin="foo", demoDataYaml="{}", icon="", titleIcon="", titleColor="#666666", dataYaml="{}",
                  customRegister=None, afterRegister=None, runInMenu=dummyRunInMenu, getContentForRprompt=None,
-                 options=[], getCustomContentForRprompt=None,
+                 options=[], getCustomContentForRprompt=None, title="",
                  optionDebug=optionDebug):
         self.namePlugin = namePlugin
         self.demoDataYaml = demoDataYaml
         self.dataYaml = dataYaml
         self.icon = icon
+        if title != "" :
+            self.title = title
+        else:
+            self.title = namePlugin
         self.titleIcon = titleIcon
         self.titleColor = titleColor
         self.customRegister = customRegister
@@ -148,7 +156,7 @@ class Plugin:
 
     def getDefaultContentForRprompt(self,args):
         nameLeft = ""
-        for i in (args["element"]["titleIcon"] + args["element"]["type"].upper()):
+        for i in (args["element"]["titleIcon"] + args["element"]["title"].upper()):
             nameLeft = nameLeft + "[bold on white]" + i + "" + "\n"
         grid = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
         grid.add_column(style=args["self"].titleColor)
@@ -168,7 +176,7 @@ class Plugin:
             return(self.getDefaultContentForRprompt(args))
 
 
-    def register(self, configDict, key=None, path=None, data=None, path_entry_name=None,menu_completion=None, tab=""):
+    def register(self, configDict, key=None, path=None, data=None, path_entry_name=None,menu_completion=None, tab="",tmpDir=""):
         data["path_entry_name_content"]["path_" + path_entry_name + key] = {}
         args = {"configDict": configDict,
                 "element": data["path_entry_name_content"]["path_" + path_entry_name + key],
@@ -180,7 +188,9 @@ class Plugin:
                 "path_entry_name":path_entry_name,
                 "menu_completion": menu_completion,
                 "titleIcon": self.getTitleIcon(),
+                "preview": menu_completion,
                 "self": self ,
+                "tmpDir": tmpDir,
                 "tab": tab}
         data["path_entry_name_content"]["path_" + path_entry_name + key]["titleIcon"]=self.getTitleIcon()
         if self.customRegister is not None:
@@ -196,8 +206,8 @@ class Plugin:
                 args = {"objet": objet}
                 self._optionDebug(args)
                 exit()
-        args = {"objet": objet, "option": option, "menuCompletion": data["menu_completion"], "pathEntry": pathEntry,
-                "style": data["style"], "tmpDir": data["tmpDir"]}
+        args = {"objet": objet, "configDict": objet, "option": option, "menuCompletion": data["menu_completion"], "pathEntry": pathEntry,
+                "style": data["style"], "tmpDir": data["tmpDir"], "self": self, "data": data}
         self._runInMenu(args)
 
 

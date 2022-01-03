@@ -5,18 +5,13 @@ from rich.pretty import pprint
 
 
 dataYaml = """
-settings:
+manage:
   icon: ""
   description: display debug information and update
-  tags: ["settings"]
-#  test:
-#    setting:
-#      starterTree_title: bo
+  tags: ["manage"]
   config:
     setting: config
-    starterTree_title: starterTree
-    starterTree_theme: grey
-    #starterTree_disableIcon: yes
+    description: show config
   update:
     icon: "⠀"
     setting: update

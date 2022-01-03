@@ -13,37 +13,21 @@ from modules import loadData, mainPrompt, bottomToolbar
 from sys import exit
 import os
 import sys
-import requests
-from prompt_toolkit.shortcuts import prompt
 from prompt_toolkit import PromptSession
-# from modules.output.textable import Tableau as Tableau
 from shlex import quote
-# import base64
-# import paramiko
-# import colorama
 from rich.pretty import pprint
-
-
-import modules.downloadWebContent
-
-
-# style=Style.from_dict(settings)
-
 
 def getIcon(icon, defaultIcon=""):
     if detectNerdFont:
         return icon
     return defaultIcon
 
-
-# print(type(text))
 def getPromptText():
     icon = "search > ssh_cmd >"
     if detectNerdFont: icon = "     "
     history = FileHistory(tmpDir + ".history_ssh_cmd")
     session = PromptSession("\n" + icon + " ", style=style, key_bindings=bindings, history=history)
     prompt = session.prompt(default="", rprompt=None)
-    # prompt= prompt.replace('"','')
     prompt = prompt.encode('ascii', errors='ignore').decode()
     return prompt
 
@@ -71,7 +55,6 @@ def getTag(result):
                     myComplete[i] = {}
     for i in myComplete:
         myCompleteL.append(i)
-    # promptT = getPromptText()
 
     completer = FuzzyCompleter(WordCompleter(myCompleteL, ignore_case=True))
 
@@ -79,7 +62,6 @@ def getTag(result):
     icon = "search > tag >"
     if detectNerdFont: icon = "   "
     session = PromptSession(icon + " ", style=style, key_bindings=bindings)
-    # prompt= session.prompt(pre_run=session.default_buffer.start_completion,default="",completer=completer)
     prompt = session.prompt(pre_run=session.default_buffer.start_completion, default="", completer=completer)
 
 
@@ -134,7 +116,6 @@ def main():
 
 
 if __name__ == "__main__":
-    # style=settings["theme"]
     main()
 
 exit()

@@ -53,35 +53,21 @@ def execMainPromptSession(data, promptTitle, bottomToolbar=None, plugins=None):
         history=history,
         complete_style=CompleteStyle.MULTI_COLUMN,
         key_bindings=bindings)
-
-    prompt_id = session.prompt(
-        placeholder="press space to use completion or up to use history",
-        rprompt=None,
-        bottom_toolbar=bottomToolbar,
-        default=""
-    ).replace(" ", "")
+    try:
+        prompt_id = session.prompt(
+            placeholder="press space to use completion or up to use history",
+            rprompt=None,
+            bottom_toolbar=bottomToolbar,
+            default=""
+        ).replace(" ", "")
+    except AttributeError:
+        exit()
     historyName = prompt_id
     prompt_id = prompt_id.encode('ascii', errors='ignore').decode()
-    # except:
-    #    print("error")
-    #    exit()
+
 
     prompt_id = "path_" + prompt_id
-    # if  prompt_id in path_entry_name_content_cmd:
-    #    if "encryptable" in path_entry_name_content_cmd[prompt_id]:
-    #        os.system("cat "+tmpDir+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable"])+" | gpg -a --cipher-algo AES256 -c")			
-    #    if "encryptable-kube" in path_entry_name_content_cmd[prompt_id]:
-    #        os.system("cat "+os.path.basename(path_entry_name_content_cmd[prompt_id]["encryptable-kube"])+" | gpg -a --cipher-algo AES256 -c")			
 
-    #    if keyword_web_content in path_entry_name_content_cmd[prompt_id]:
-    #        modules.downloadWebContent.launch(path_entry_name_content=path_entry_name_content,prompt_id=prompt_id,keyword_web_content=keyword_web_content,tmpDir=tmpDir)
-    #        #downloadFromUrl(path_entry_name_content[prompt_id.replace("--pull","")][keyword_web_content])
-    #    if keyword_gitlab_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
-    #        downloadFromGitLabWithPromptToken(path_entry_name_content_cmd[prompt_id.replace("","")][keyword_gitlab_content_code_prompt_token])
-    #    if keyword_github_content_code_prompt_token in path_entry_name_content_cmd[prompt_id]:
-    #        downloadFromGitHubWithPromptToken(path_entry_name_content_cmd[prompt_id.replace("","")][keyword_github_content_code_prompt_token])
-    # exit()
-    # print(prompt_id)
     option = None
     # print(len(prompt_id.split("--")))
     if len(prompt_id.split("--")) == 2: option = prompt_id.split("--")[1]
@@ -98,4 +84,4 @@ def execMainPromptSession(data, promptTitle, bottomToolbar=None, plugins=None):
 
     else:
         print("ERR: entry not found")
-        main()
+        execMainPromptSession(data, promptTitle, bottomToolbar=bottomToolbar, plugins=plugins)
