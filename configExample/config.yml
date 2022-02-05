@@ -14,7 +14,7 @@ mainName3:
     ssh: "root@192.168.5.5" # ssh -> execute ssh command
   myServer2:
     ssh: "root@192.168.5.5"
-    tags: ["test"],["tag1"]
+    tags: ["test","tag1"]
   subDir:
     myServer:
       ssh: "root@192.168.5.5"
