@@ -1,6 +1,6 @@
-nameScript=starterTree.py
-nameBinary=starterTree
-nameLink=st
+nameScript=socle.py
+nameBinary=socle
+nameLink=socle-dev
 [[ $1 == "" ]] && { echo need version as '$1' ; exit 1 ; }
 sed -i "s/version is.*hash/version is $(git rev-parse HEAD) hash/g" $nameScript
 sed -i "s/version is version/$1/g" $nameScript

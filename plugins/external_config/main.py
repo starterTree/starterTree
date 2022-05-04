@@ -6,6 +6,8 @@ import requests
 from modules.utils import my_fun,jinjaFile2yaml
 from rich.panel import Panel
 from rich.table import Table
+from getpass import getpass
+from rich.console import Group
 
 def writeConfig(path,content):
     with open(path,"w") as f:
@@ -37,21 +39,25 @@ def loadData(args,configFile):
 
 def downloadFromGitLabWithPromptToken(url,tmpDir):
     print(url)
-    token=prompt('token like ezzfegzgezcH: ', is_password=True)
+    token=getpass('token like ezzfegzgezcH: ')
+    #token=getpass('token like ezzfegzgezcH: ', is_password=True)
     r = requests.get(url, headers={'PRIVATE-TOKEN':token})
+    token=""
     rep='\n'.join(r.json()["content"].split('\n')[1:])
-    return writeConfig(tmpDir+os.path.basename(url),rep)
+    return writeConfig(tmpDir+url.replace('/','°' ),rep)
+    #return writeConfig(tmpDir+os.path.basename(url),rep)
 
 def downloadFromGitHubWithPromptToken(url,tmpDir):
     print(url)
-    token=prompt('token like ezzfegzgezcH: ', is_password=True)
+    token=getpass('token like ezzfegzgezcH: ')
     r = requests.get(url, headers={'Authorization':'token '+token,'Accept': 'application/vnd.github.v4.raw'})
+    token=""
     rep='\n'.join(r.text.split('\n')[1:])
-    writeConfig(tmpDir+os.path.basename(url),rep)
+    writeConfig(tmpDir+url.replace('/','°' ),rep)
 
 def downloadFromUrl(url,tmpDir):
     r = requests.get(url)
-    return writeConfig(tmpDir+os.path.basename(url),r.text)
+    return writeConfig(tmpDir+url.replace('/','°' ),r.text)
 
 demoDataYaml="""
 demo_web_content:
@@ -73,44 +79,39 @@ demo_web_content:
 #					menu_completion[icon+key]={}
 
 def register_web_content(args):
-    path=os.path.basename(args["configDict"]["web_content"])
-    if not os.path.exists(args["tmpDir"] + os.path.basename(args["configDict"]["web_content"])):
+    #path=os.path.basename(args["configDict"]["web_content"])
+    path=args["tmpDir"]+args["configDict"]["web_content"].replace('/','°')
+    #if not os.path.exists(args["tmpDir"] + os.path.basename(args["configDict"]["web_content"])):
+    if not os.path.exists(path):
         downloadFromUrl(args["configDict"]["web_content"],args["tmpDir"])
-    loadData(args,args["tmpDir"]+path)
+    loadData(args,path)
 
 def run_web_content(args):
     if args["option"] == "pull" :
-        path = os.path.basename(args["objet"]["web_content"])
         downloadFromUrl(args["objet"]["web_content"], args["tmpDir"])
-        # loadData(args, args["tmpDir"] + path)
-
 
 
 def register_web_content_gitlab(args):
-    path=os.path.basename(args["configDict"]["gitlab_api_content_prompt_token"])
-    if not os.path.exists(args["tmpDir"] + os.path.basename(args["configDict"]["gitlab_api_content_prompt_token"])):
-        downloadFromGitLabWithPromptToken(args["configDict"]["github_api_content_prompt_token"],args["tmpDir"])
-    loadData(args,args["tmpDir"]+path)
+    path=args["tmpDir"]+args["configDict"]["gitlab_api_content_prompt_token"].replace('/','°')
+    if not os.path.exists(path):
+        downloadFromGitLabWithPromptToken(args["configDict"]["gitlab_api_content_prompt_token"],args["tmpDir"])
+    loadData(args,path)
 
 def run_web_content_gitlab(args):
     if args["option"] == "pull" :
-        path = os.path.basename(args["objet"]["gitlab_api_content_prompt_token"])
         downloadFromGitLabWithPromptToken(args["objet"]["gitlab_api_content_prompt_token"], args["tmpDir"])
-        # loadData(args, args["tmpDir"] + path)
 
 
 
 def register_web_content_github(args):
-    path=os.path.basename(args["configDict"]["github_api_content_prompt_token"])
-    if not os.path.exists(args["tmpDir"] + os.path.basename(args["configDict"]["github_api_content_prompt_token"])):
+    path=args["tmpDir"]+args["configDict"]["github_api_content_prompt_token"].replace('/','°')
+    if not os.path.exists(path):
         downloadFromGitHubWithPromptToken(args["configDict"]["github_api_content_prompt_token"],args["tmpDir"])
-    loadData(args,args["tmpDir"]+path)
+    loadData(args,path)
 
 def run_web_content_github(args):
     if args["option"] == "pull" :
-        path = os.path.basename(args["objet"]["github_api_content_prompt_token"])
         downloadFromGitHubWithPromptToken(args["objet"]["github_api_content_prompt_token"], args["tmpDir"])
-        # loadData(args, args["tmpDir"] + path)
 
 
 
@@ -137,14 +138,16 @@ def getContentForRprompt(args):
     grid3 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 0))
     #grid3.add_row(Panel.fit(preview(args),title=args["self"].getTitleIcon(),style="bold on green"))
     grid3.add_row(preview(args))
-    grid.add_row(nameLeft, grid2,Panel.fit(grid3,title=args["self"].getTitleIcon(),style="bold on green"))
-    #grid.add_row(nameLeft, grid2, grid3)
-    return grid
+    gridDescPrev = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
+    gridDescPrev.add_row(grid2,Panel.fit(preview(args),title=args["self"].getTitleIcon()+" "+args["element"]["path"]+args["element"]["name"],style="bold on green"))
+    grid.add_row(nameLeft,gridDescPrev )
+    grid.add_row("","[bold on white] from cached file: "+args["element"][args["element"]["type"]])
+    return Group(grid)
 
 
 
 import Plugin
 
-plugin=Plugin.Plugin(namePlugin="gitlab_api_content_prompt_token",title="gitlab",demoDataYaml=demoDataYaml,afterRegister=register_web_content_gitlab,runInMenu=run_web_content_gitlab,icon=" ",titleIcon="",options=["pull"],getCustomContentForRprompt=getContentForRprompt)
-plugin=Plugin.Plugin(namePlugin="github_api_content_prompt_token",title="github",demoDataYaml=demoDataYaml,afterRegister=register_web_content_github,runInMenu=run_web_content_github,icon=" ",titleIcon="",options=["pull"],getCustomContentForRprompt=getContentForRprompt)
+plugin=Plugin.Plugin(namePlugin="gitlab_api_content_prompt_token",title="git",demoDataYaml=demoDataYaml,afterRegister=register_web_content_gitlab,runInMenu=run_web_content_gitlab,icon=" ",titleIcon="",options=["pull"],getCustomContentForRprompt=getContentForRprompt)
+plugin=Plugin.Plugin(namePlugin="github_api_content_prompt_token",title="git",demoDataYaml=demoDataYaml,afterRegister=register_web_content_github,runInMenu=run_web_content_github,icon=" ",titleIcon="",options=["pull"],getCustomContentForRprompt=getContentForRprompt)
 plugin=Plugin.Plugin(namePlugin="web_content",title="web",demoDataYaml=demoDataYaml,afterRegister=register_web_content,runInMenu=run_web_content,icon=" ",titleIcon="",options=["pull"],getCustomContentForRprompt=getContentForRprompt)

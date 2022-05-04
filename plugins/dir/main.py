@@ -29,18 +29,19 @@ def preview(args):
 
 def getContentForRprompt(args):
     nameLeft = ""
-    for i in (args["self"].getTitleIcon() + args["element"]["type"].upper()):
+    for i in (args["element"]["type"].upper()):
         nameLeft = nameLeft + "[bold on white]" + i + "" + "\n"
+    nameLeft="[bold on green]"+args["self"].getTitleIcon()+"\n" + nameLeft
     grid = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
     grid.add_column(style=args["self"].titleColor)
-    grid2 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 1))
-    grid2.add_row("[bold #444444 on white]\n" + args["element"]["description"] + "\n")
+    grid2 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 0))
+    grid2.add_row("[bold on green]"+args["element"]["name"]+"[bold #444444 on white]\n" + args["element"]["description"] + "\n")
     # grid2.add_row(Markdown("`bash` "))     # markdown is possible !
     grid2.add_row(Plugin.displayTags(args["element"]["tags"]))
     grid3 = Table(expand=False, box=None, show_header=False, show_edge=False, padding=(0, 0))
     #grid3.add_row(Panel.fit(preview(args),title=args["self"].getTitleIcon(),style="bold on green"))
     grid3.add_row(preview(args))
-    grid.add_row(nameLeft, grid2,Panel.fit(grid3,title=args["self"].getTitleIcon(),style="bold on green"))
+    grid.add_row(nameLeft, grid2,Panel.fit(grid3,title=args["self"].getTitleIcon()+" "+args["element"]["name"],style="bold on green"))
     #grid.add_row(nameLeft, grid2, grid3)
     return grid
 
@@ -70,6 +71,7 @@ def register(args):
         "titleIcon": args["self"].getTitleIcon()
     }
     args["element"]["preview"]="heho"
+    args["element"]["name"]=args["key"]
     args["element"]["titleIcon"] = args["self"].getTitleIcon()
     menu={}
     if "hide" not in args["configDict"]:

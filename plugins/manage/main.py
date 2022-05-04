@@ -27,6 +27,8 @@ manage:
     config:
       setting: config
       description: show config dict
+  encrypt:
+    enc: "test"
 """
 
 def runInMenu(args):

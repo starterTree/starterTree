@@ -50,6 +50,8 @@ def defaultRegister(args):
         "titleIcon" : args["self"].getTitleIcon(),
         "title": args["self"].title,
         "name": args["key"],
+        "key": args["key"],
+        "total_path": "",
         "type": args["self"].namePlugin,
         "key_menu_completion": key_menu_completion,
         "preview": args["preview"],
@@ -79,20 +81,20 @@ def displayTags(tags):
     for r in range(len(tags)):
         icon = ''
         style = ''
-        if tags[r] == "server": icon = getIcon(" ");style = "bold red"
-        if tags[r] == "web": icon = getIcon(" ");style = "bold blue"
+        if tags[r] == "server": icon = getIcon(" ");style = "bold red on white"
+        if tags[r] == "web": icon = getIcon(" ");style = "bold blue on white"
         # r=' '+r+' '
         # content.append("[white on black] "+r+" ")
         # content=content+("[white on black] "+r+" [/white on black] ")
         # content=content+Text(''+r,overflow="fold",style="bold white")+Text(" ")
         if (r % 2) == 0:
             # content=content+Text(''+tags[r],overflow="fold",style="bold #ffffff")+Text(" ")
-            if icon == '': icon = getIcon('')
-            if style == '': style = "#f2f2f2"
+            if icon == '': icon = getIcon(' ')
+            if style == '': style = "white on black"
             content = content + Text(" " + icon + tags[r] + " ", overflow="fold", style=style) + Text(" ")
         else:
-            if icon == '': icon = getIcon('')
-            if style == '': style = "#f2f2f2"
+            if icon == '': icon = getIcon(' ')
+            if style == '': style = "white on black"
             content = content + Text(" " + icon + tags[r] + " ", overflow="fold", style=style) + Text(" ")
     # grid =Table(expand=False, box=box.SQUARE,show_header=False,show_edge=False,padding=(0,1))
     # grid.add_row(a,Padding(content,pad=(0,0,0,0),expand=False))
@@ -184,8 +186,10 @@ class Plugin:
                 "completionDictElement": "menuDict[key_menu_completion]",
                 "data": data,
                 "key":key,
+                "name":key,
                 "path":path,
                 "path_entry_name":path_entry_name,
+                "total_path":path_entry_name,
                 "menu_completion": menu_completion,
                 "titleIcon": self.getTitleIcon(),
                 "preview": menu_completion,
